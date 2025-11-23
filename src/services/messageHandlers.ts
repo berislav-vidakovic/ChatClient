@@ -244,7 +244,7 @@ export function handleWsUserRegister( jsonResp: any ){
   if( jsonResp.acknowledged ) { 
     // Construct the new user object
     const newUser: User = {
-      userId: jsonResp.user.userId,
+      userId: jsonResp.user.id,
       login: jsonResp.user.login,
       fullname: jsonResp.user.fullName,
       isonline: jsonResp.user.isOnline,

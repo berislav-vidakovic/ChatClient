@@ -80,8 +80,9 @@ export async function sendWsHealthCheck() {
     console.log("WS message sent ...");
 }
 
-export async function registerUser(login: string, fullname: string) {
-  const body = JSON.stringify({ register: { login, fullname } } );
+export async function registerUser(
+    login: string, fullname: string, password:string) {
+  const body = JSON.stringify({ login, fullname, password } );
   //{ register: { login, fullname } 
   sendPOSTRequest('api/users/register', body, handleUserRegister);
   console.log("POST sending: ", body );

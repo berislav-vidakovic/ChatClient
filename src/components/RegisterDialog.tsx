@@ -19,6 +19,8 @@ function RegisterDialog({
   // Refs to access DOM input values
   const loginRef = useRef<HTMLInputElement>(null);
   const fullnameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  
 
   const handleConfirmClick = () => {
     if (!isWsConnected) {
@@ -28,13 +30,14 @@ function RegisterDialog({
     }  
     const login: string = loginRef.current?.value.trim() ?? "";
     const fullname: string = fullnameRef.current?.value.trim() ?? "";
-    console.log("Entered values:", { login, fullname });      
-    if (!login || !fullname) {
-      alert("Please fill in both fields.");
+    const password: string = passwordRef.current?.value.trim() ?? "";
+    console.log("Entered values:", { login, fullname, password });      
+    if (!login || !fullname || !password) {
+      alert("Please fill in all fields.");
       return;
     }
     
-    registerUser(login, fullname); // async call
+    registerUser(login, fullname, password); // async call
     setShowRegisterDialog(false);   // Close dialog
   };
 
@@ -68,6 +71,21 @@ function RegisterDialog({
         <input 
           placeholder="Full Name"
           ref={fullnameRef}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleConfirmClick();
+            }
+          }}
+        ></input>
+
+        <label>Password</label>
+        <br />
+        <input 
+          style={{marginBottom: "18px"}}
+          id="inputPwd"
+          placeholder="password"
+          ref={passwordRef}          
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
