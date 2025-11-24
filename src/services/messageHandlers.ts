@@ -221,6 +221,8 @@ async function  handleWsNewMessageSent( jsonMsgData: any ){
 }
 
 async function handleWsUserSessionUpdate( jsonMsgData: any ) {
+  console.log("*** Ws-HANDLE User session update: ", jsonMsgData);
+  return;
   // { type: "userSessionUpdate", status: "WsStatus.OK", data: { userId: 1, isOnline: false } }
   const userId = jsonMsgData.userId;
   const isOnline = jsonMsgData.isOnline;    

@@ -10,7 +10,7 @@ import LoginDialog from './components/LoginDialog.tsx'
 import NewChatDialog from './components/NewChatDialog.tsx' 
 import RegisterDialog from './components/RegisterDialog.tsx' 
 import type { User, Message, ChatUsers } from './interfaces.ts';
-import { sendGETRequest } from './services/restAPI.ts'
+import { sendGETRequest, sendPOSTRequest } from './services/restAPI.ts'
 
 function App() {
   const [isConfigLoaded, setConfigLoaded] = useState<boolean>(false);
@@ -67,7 +67,10 @@ function App() {
       
  
   // WS connect
-  useEffect( () => { if( isConfigLoaded  ) connectWS(setWsConnected); 
+  useEffect( () => { if( isConfigLoaded  ) {
+      sessionStorage.setItem("myID", "c98dafe8-9820-48ed-b188-7cb1dde1e565");
+      connectWS(setWsConnected); 
+    }
       else console.log("WS-Config not loaded yet");
   }, [isConfigLoaded]);
 
@@ -77,6 +80,18 @@ function App() {
       else console.log("WS not established yet");
     }, [isConfigLoaded, isInitialized, isWsConnected]); 
 */
+
+  const handleLoginClick = () => {
+    const refreshToken = sessionStorage.getItem('refreshToken');
+    sendPOSTRequest('api/auth/refresh', 
+      JSON.stringify({ refreshToken }), 
+      (jsonResp: any) => {
+        console.log("Response to LoginClick: ", jsonResp );
+        sessionStorage.setItem('accessToken', jsonResp.accessToken);
+        sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
+      });
+    //setShowLoginDialog(true);
+  }
 
   return (
     <main className="app-container">
@@ -98,7 +113,7 @@ function App() {
 
     <button 
       id="btnLogin" 
-      onClick={() => setShowLoginDialog(true)}
+      onClick={() => handleLoginClick() }
       disabled={(currentUserId != null) || !isWsConnected}
     >
       Login
