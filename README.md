@@ -9,3 +9,10 @@
   - save to sessionStorage 
 - Handle WS message - Write to console.log
 
+### 2. Refresh token validation 
+
+- Response Status code 200 (OK)
+  - RefreshToken in Request was valid - login successfull
+- Response Status code 201 (Created)
+  - RefreshToken in Request was invalid or expired - password login required
+- Ony log Status code received

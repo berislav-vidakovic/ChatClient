@@ -85,7 +85,8 @@ function App() {
     const refreshToken = sessionStorage.getItem('refreshToken');
     sendPOSTRequest('api/auth/refresh', 
       JSON.stringify({ refreshToken }), 
-      (jsonResp: any) => {
+      (jsonResp: any, status: number) => {
+        console.log("Response StatusCode: ", status );
         console.log("Response to LoginClick: ", jsonResp );
         sessionStorage.setItem('accessToken', jsonResp.accessToken);
         sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
