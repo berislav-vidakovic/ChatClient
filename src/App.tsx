@@ -82,8 +82,7 @@ function App() {
 */
 
   const handleLoginClick = () => {
-    let refreshToken = sessionStorage.getItem('refreshToken');
-    refreshToken = 'newShellyRefreshToken';
+    const refreshToken = sessionStorage.getItem('refreshToken');
     sendPOSTRequest('api/auth/refresh', 
       JSON.stringify({ refreshToken }), 
       (jsonResp: any, status: number) => {

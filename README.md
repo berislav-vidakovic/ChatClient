@@ -33,3 +33,9 @@ Note: Status codes that never carry message body:
 - 204 (No Content)
 - 205 (Reset Content)
 - 304 (Not Modified)
+
+### 4. Handle real renewed tokens
+
+- get refreshToken from sessionStorage
+- on Response OK save renewed accessToken and refreshToken to sessionStorage
+- no Authorization: Bearer header with accessToken sent yet
