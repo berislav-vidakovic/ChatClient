@@ -16,3 +16,20 @@
 - Response Status code 201 (Created)
   - RefreshToken in Request was invalid or expired - password login required
 - Ony log Status code received
+
+### 3. Upgraded Refresh token validation 
+
+- For invalid or expired refreshToken
+  - Response HttpStatus.UNAUTHORIZED (401)  
+- For valid refreshToken
+  - Response HttpStatus.OK (200) with { dummyAccessToken, refreshToken, userId, isOnline: true }   
+- Testing on Frontend  
+  1. Request { refreshToken: dummyRefreshToken }  
+      - Expected Response: HttpStatus.UNAUTHORIZED (401) { error: 'Refresh token missing, invalid or expired' }
+  2. Request { refreshToken: validRefreshToken }  
+      - Expected Response: HttpStatus.OK (200) { dummyAccessToken, newRefreshToken, userId, isOnline: true }
+
+Note: Status codes that never carry message body: 
+- 204 (No Content)
+- 205 (Reset Content)
+- 304 (Not Modified)

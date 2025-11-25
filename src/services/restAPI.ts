@@ -57,6 +57,7 @@ export async function sendPOSTRequest(
         case StatusCodes.OK: // 200
         case StatusCodes.CREATED: // 201
         case StatusCodes.RESET_CONTENT: // 205
+        case StatusCodes.UNAUTHORIZED: // 401
           handleResponse( jsonResp, res.status );
         //case StatusCodes.BAD_REQUEST: // 400
         //case StatusCodes.CONFLICT: // 409
