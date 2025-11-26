@@ -39,3 +39,68 @@ Note: Status codes that never carry message body:
 - get refreshToken from sessionStorage
 - on Response OK save renewed accessToken and refreshToken to sessionStorage
 - no Authorization: Bearer header with accessToken sent yet
+
+### 5. Authorization Bearer header section with accessToken 
+ 
+Frontend protected endpoint Request workflow   
+- Frontend sends access token  
+- If backend returns 200 - happy path  
+- If backend returns 401 (invalid/expired access token): 
+  - send refresh token 
+    - receive new access + refresh tokens
+      - retry request 
+    - refresh failed 
+      - force password login
+
+#### Endpoints currently implemented on backend:
+
+- api/ping  
+- api/pingdb
+- api/users/all
+- api/users/register (protected)
+- websocket
+- api/auth/refresh
+
+
+- Added Authorization Bearer section in header of generic send for POST and GET request:
+
+  ```js
+  fetch( postUrl, {
+    method: "POST",
+    headers: { 
+      "Authorization": "Bearer " + sessionStorage.getItem("accessToken"),
+      "Content-Type": "application/json" 
+    },
+    body: msgBody, 
+  }) 
+  ```
+
+#### Happy path
+
+- Sending accessToken in header of each Request
+  - Response Status Code 200 (OK)
+  - proceeding with business logic
+
+#### Invalid accessToken
+
+- backend does NOT create new tokens, only sends Response Status Code
+  - 400 (Bad Request) for missing Authorization header in Request
+  - 401 (Unathorized) for invalid/expired JWT
+- frontend runs refresh token path providing refreshToken in Request
+  - on valid Refreh token 
+    - backend sends new accessToken and refreshToken in Response
+    - frontend stores tokens and retries initial call to protected endpoint
+  - on invalid refresh Token backend sends code 401 (Unathorized)
+    - frontend runs password login path
+      - on valid password 
+        - backend sends new accessToken and refreshToken in Response
+        - frontend stores tokens, no second retry call (overkill)
+- Implementation of invalid access token retry path for /register endpoint
+  - TODO in the next step
+
+
+Token Validation Flow
+1. AccessToken - no new tokens in Response
+2. RefreshToken - new tokens in Response
+3. Password - new tokens in Response
+

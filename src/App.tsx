@@ -59,7 +59,7 @@ function App() {
   */
 
   
-  // GET users
+  // GET users /api/users/all
   useEffect( () => { if( isConfigLoaded ) getAllUsers(
       handleGetUsers); 
       else console.log("GET-Config not loaded yet");

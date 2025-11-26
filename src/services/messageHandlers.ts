@@ -87,14 +87,13 @@ export function handleUserLogin( jsonResp: any, status: number ){
   // Response: {userOnline: true, userId: 2, messages: [{},{}] }
  
   // update messages {messageId: 6, chatId: 3, userId: 2, timestamp: '2025-10-18T11:22:34', text: 'New message'}
-  if (!Array.isArray(jsonResp.messages)  ) return;  
+  if ( !Array.isArray(jsonResp.messages) ) return;  
   const messages: Message[] = jsonResp.messages.map((m: any) => ({
     msgId: m.messageId,
     chatId: m.chatId,
     userId: m.userId,
     datetime: new Date(m.timestamp),
     text: m.text }));
-
  
   // update chats [{ "chatId": 1, "userIds": [5, 7, 9] }]  
   if (!Array.isArray(jsonResp.chatUsers)  ) return;  
@@ -222,7 +221,7 @@ async function  handleWsNewMessageSent( jsonMsgData: any ){
 
 async function handleWsUserSessionUpdate( jsonMsgData: any ) {
   console.log("*** Ws-HANDLE User session update: ", jsonMsgData);
-  return;
+  
   // { type: "userSessionUpdate", status: "WsStatus.OK", data: { userId: 1, isOnline: false } }
   const userId = jsonMsgData.userId;
   const isOnline = jsonMsgData.isOnline;    
