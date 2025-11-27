@@ -1,5 +1,19 @@
 ## JWT Authentication incremental build
 
+### Table of Contents
+
+1. [Send refresh token on Login button](#1-send-refresh-token-on-login-button)  
+2. [Refresh token validation](#2-refresh-token-validation)  
+3. [Upgraded Refresh token validation](#3-upgraded-refresh-token-validation)  
+4. [Handle real renewed tokens](#4-handle-real-renewed-tokens)  
+5. [Authorization Bearer header section with accessToken](#5-authorization-bearer-header-section-with-accesstoken)  
+    - [Endpoints currently implemented on backend](#endpoints-currently-implemented-on-backend)  
+    - [Happy path](#happy-path)  
+    - [Invalid accessToken](#invalid-accesstoken)  
+    - [Token Validation Flow](#token-validation-flow)  
+6. [Invalid access token retry path for /register endpoint](#6-invalid-access-token-retry-path-for-register-endpoint)
+
+
 ### 1. Send refresh token on Login button
 
 - handleLoginClick 
@@ -104,3 +118,18 @@ Token Validation Flow
 2. RefreshToken - new tokens in Response
 3. Password - new tokens in Response
 
+### 6. Invalid access token retry path for /register endpoint
+
+- Single retry mechanism
+  - Retry the protected request only once after refresh
+  - If refresh fails, do not keep retrying - force login
+- Centralized error handling
+  - The retry logic sits in a single place
+- Automatic & transparent token renewal
+  - Users do not notice anything when access tokens expire
+- Refresh token only used when necessary
+  - Never check refresh token before each call (ruins performance)
+- Clean fallback to full authentication
+  - If refresh fails - raise login dialog (force login)
+ 
+<img src = "docs/JWTclientFlow.png" style="height:500px;" /> 

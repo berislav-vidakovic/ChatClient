@@ -1,6 +1,17 @@
 import { URL_BACKEND_HTTP, reconnectApp } from './utils.ts';
 import { isResetMessageReceived } from './messageHandlers.ts'
 import { StatusCodes } from "http-status-codes"
+import type { Dispatch, SetStateAction } from 'react';
+
+
+let setShowLoginDlgRef:  Dispatch<SetStateAction<boolean>>;
+
+export function setLoginDialogRef(
+  setShowLoginDlg:  Dispatch<SetStateAction<boolean>>
+){
+    setShowLoginDlgRef = setShowLoginDlg;
+}
+
 
 
 export async function sendGETRequestSync(endpoint: string): Promise<any> {
@@ -11,6 +22,88 @@ export async function sendGETRequestSync(endpoint: string): Promise<any> {
     }
     return await response.json(); // Call once - content consumed
 }
+
+// Protected Endpoint 2 retries - BEGIN --------------------------------
+  // 1-client calls sendPOSTRequestProtected(clientResponseHandler)
+  // 2-sendPOSTRequestProtected 
+      //- set isFirstRetry = true
+      //- call sendPOSTRequest(localReponseHandler)
+      //- localReponseHandler check status
+        //- if OK  
+          //- call clientResponseHandler
+        //- if UNAUTHORIZED 
+          // if isFirstRetry == false 
+            //- raise Login Dialog
+            //- call clientResponseHandler 
+          //- if isFirstRetry == true 
+            //- call sendRefreshTokenRequest(refreshHandleResponse)
+            //- refreshHandleResponse check status
+              //- if OK 
+                //- set isFirstRetry = false
+                //- call again sendPOSTRequest(localReponseHandler)
+              // - else
+                //- raise Login Dialog 
+                //- call clientResponseHandler 
+
+function showLoginDialog(){
+  //TODO showDialog to enter login & password
+  console.log("****************** LOgin with pwd");
+  setShowLoginDlgRef(true);
+}
+
+async function sendRefreshTokenRequest(
+  handleResponse: (data: any, status: number) => void ): Promise<any> {
+    const refreshToken = sessionStorage.getItem('refreshToken');  
+
+    sendPOSTRequest('api/auth/refresh', 
+      JSON.stringify({ refreshToken }), 
+      handleResponse);
+}
+
+// Generic POST sending to protected endpoint
+export async function sendPOSTRequestProtected(
+    endpoint: string, 
+    msgBody: string, 
+    clientResponseHandler: (data: any, status: number) => void ): Promise<any> {
+  
+  let isFirstRetry: boolean = true;
+  const handleRefreshResponse = ( jsonResp: any, status: number ) =>{
+    console.log("*** HANDLE handleRefreshResponse: ", jsonResp);
+    if( status == StatusCodes.OK ) {
+      isFirstRetry = false;
+      sessionStorage.setItem('accessToken', jsonResp.accessToken)
+      sessionStorage.setItem('refreshToken', jsonResp.refreshToken)
+      // 2nd call
+      sendPOSTRequest(endpoint, msgBody, handleResponseLocal);
+      return;
+    }
+    if( status == StatusCodes.UNAUTHORIZED || status == StatusCodes.BAD_REQUEST ){
+      showLoginDialog();
+    }
+  }   
+
+  const handleResponseLocal = ( jsonResp: any, status: number ) => {
+    console.log("*** HANDLE handleReponseLocal: ", jsonResp);
+    if( status == StatusCodes.OK ) {
+      clientResponseHandler(jsonResp, status ); // shortest happy path
+      return;
+    }
+    if( status == StatusCodes.UNAUTHORIZED ){
+      console.log("Resp status == StatusCodes.UNAUTHORIZED");
+      if( isFirstRetry )
+        sendRefreshTokenRequest(handleRefreshResponse);
+      else {
+        showLoginDialog();
+        clientResponseHandler(jsonResp, status );
+      }
+    }    
+  }   
+  // 1st call
+  sendPOSTRequest(endpoint, msgBody, handleResponseLocal);
+}
+
+// Protected Endpoint 2 retries - END ----------------------------------
+
 
 // Generic GET sending
 export async function sendGETRequest(
@@ -70,12 +163,5 @@ export async function sendPOSTRequest(
     .catch(err => console.log("POST request failed:", err));
 }
 
-export async function sendRefreshTokenRequest(
-  handleResponse: (data: any, status: number) => void ): Promise<any> {
-    const refreshToken = sessionStorage.getItem('refreshToken');  
 
-    sendPOSTRequest('api/auth/refresh', 
-      JSON.stringify({ refreshToken }), 
-      handleResponse);
-}
 

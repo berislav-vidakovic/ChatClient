@@ -1,7 +1,8 @@
 import './App.css'
 import './style.css'
 import { useState, useEffect } from 'react'
-import { loadConfig, initApp, getAllUsers, sendWsHealthCheck, reconnectApp, logoutUser } from './services/utils.ts'
+import { loadConfig, initApp, getAllUsers, sendWsHealthCheck, 
+  reconnectApp, logoutUser } from './services/utils.ts'
 import { handleGetUsers, handleInit, setStateFunctionRefs } from './services/messageHandlers.ts'
 import { connectWS } from './services/webSocket.ts'
 import ChatList from './components/ChatList.tsx'
@@ -10,7 +11,7 @@ import LoginDialog from './components/LoginDialog.tsx'
 import NewChatDialog from './components/NewChatDialog.tsx' 
 import RegisterDialog from './components/RegisterDialog.tsx' 
 import type { User, Message, ChatUsers } from './interfaces.ts';
-import { sendGETRequest, sendPOSTRequest } from './services/restAPI.ts'
+import { sendGETRequest, sendPOSTRequest, setLoginDialogRef } from './services/restAPI.ts'
 
 function App() {
   const [isConfigLoaded, setConfigLoaded] = useState<boolean>(false);
@@ -32,6 +33,7 @@ function App() {
     loadConfig(setConfigLoaded); 
     setStateFunctionRefs(setInitialized, setUsersRegistered, setCurrentUserId, 
       setCurrentChatId, setMessages, setChatUsers );
+    setLoginDialogRef(setShowLoginDialog);
   }, []);
 
   // GET Ping and pingdb 

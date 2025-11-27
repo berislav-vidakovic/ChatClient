@@ -1,4 +1,4 @@
-import { sendGETRequest, sendPOSTRequest, sendRefreshTokenRequest } from './restAPI.ts'
+import { sendGETRequest, sendPOSTRequest, sendPOSTRequestProtected } from './restAPI.ts'
 import { handleUserRegister, 
   handleUserLogin, handleUserLogout, handleNewChatResponse } from './messageHandlers.ts'
 import { sendWsMessage } from './webSocket.ts'
@@ -85,7 +85,7 @@ export async function registerUser(
   const body = JSON.stringify({ login, fullname, password } );
   //{ register: { login, fullname } 
   
-  sendPOSTRequest('api/users/register', body, handleUserRegister);
+  sendPOSTRequestProtected('api/users/register', body, handleUserRegister);
 
   console.log("POST sending: ", body );
 }
