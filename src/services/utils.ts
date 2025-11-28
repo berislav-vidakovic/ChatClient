@@ -55,7 +55,7 @@ export async function initApp(
 }
 
 export async function getAllUsers(
-  handleGetUsers: (data: any) => void
+  handleGetUsers: (data: any, status: number) => void
 ) {
     sendGETRequest('api/users/all', handleGetUsers);
     console.log("GET users sent...");
@@ -91,17 +91,17 @@ export async function registerUser(
 }
 
 
-export async function loginUser(userId: number) {
-  const body = JSON.stringify({ userId } );
+export async function loginUser(userId: string, password: string) {
+  const body = JSON.stringify({ userId, password } );
   
-  sendPOSTRequest('api/session/login', body, handleUserLogin);
+  sendPOSTRequest('api/auth/login', body, handleUserLogin);
   console.log("POST sending: ", body );
 }
 
-export async function logoutUser(userId: number) {
+export async function logoutUser(userId: string) {
   const body = JSON.stringify({ userId } );
   
-  sendPOSTRequest('api/session/logout', body, handleUserLogout);
+  sendPOSTRequest('api/auth/logout', body, handleUserLogout);
   console.log("POST sending: ", body );
 }
 

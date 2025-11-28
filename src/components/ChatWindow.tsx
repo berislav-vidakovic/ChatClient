@@ -7,7 +7,7 @@ import { createChatList, sendChatMessage  } from '../services/utils.ts';
 function ChatWindow( { 
       usersRegistered, currentUserId, currentChatId, messages, chatusers }: { 
       usersRegistered: User[];
-      currentUserId: number | null;
+      currentUserId: string | null;
       currentChatId: number | null;
       messages: Message[];    
       chatusers: ChatUsers[];    

@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes"
 
 let setInitializedRef:  Dispatch<SetStateAction<boolean>>;
 let setUsersRegisteredRef:  Dispatch<SetStateAction<User[]>>;
-let setCurrentUserIdRef:  Dispatch<SetStateAction<number | null>>; 
+let setCurrentUserIdRef:  Dispatch<SetStateAction<string | null>>; 
 let setCurrentChatIdRef:  Dispatch<SetStateAction<number | null>>; 
 let setMessagesRef:  Dispatch<SetStateAction<Message[]>>; 
 let setChatUsersRef:  Dispatch<SetStateAction<ChatUsers[]>>; 
@@ -14,7 +14,7 @@ let setChatUsersRef:  Dispatch<SetStateAction<ChatUsers[]>>;
 export function setStateFunctionRefs(
   setInitialized:  Dispatch<SetStateAction<boolean>>,
   setUsersRegistered:  Dispatch<SetStateAction<User[]>>,
-  setCurrentUserId:  Dispatch<SetStateAction<number | null>>,
+  setCurrentUserId:  Dispatch<SetStateAction<string | null>>,
   setCurrentChatId:  Dispatch<SetStateAction<number | null>>,
   setMessages:  Dispatch<SetStateAction<Message[]>>,
   setChatUsers:  Dispatch<SetStateAction<ChatUsers[]>>
@@ -33,20 +33,25 @@ export function handleInit( jsonResp: any ) {
   sessionStorage.setItem("myID", jsonResp.id);
 }
 
-export function handleGetUsers( jsonResp: any ) {
+export function handleGetUsers( jsonResp: any, status: number ) {
   // Map API response fields to match your User interface
   console.log("Response to GET users: ", jsonResp );
-  //return;
-  const mappedUsers: User[] = jsonResp.users.map((u: any) => ({
-    userId: u.id,
-    login: u.login,
-    fullname: u.fullName,  
-    isonline: u.isOnline   
-  }));
-  console.log("MAPPED Users: ", mappedUsers );
+  
+  sessionStorage.setItem("myID", jsonResp.id);
 
-  // Update React state - ref. to setUsersRegistered defined in App.tsx
-  setUsersRegisteredRef(mappedUsers);
+  if( status == StatusCodes.OK ){
+    const mappedUsers: User[] = jsonResp.users.map((u: any) => ({
+      userId: u.id,
+      login: u.login,
+      fullname: u.fullName,  
+      isonline: u.isOnline   
+    }));
+    console.log("MAPPED Users: ", mappedUsers );
+
+    // Update React state - ref. to setUsersRegistered defined in App.tsx
+    setInitializedRef(true);
+    setUsersRegisteredRef(mappedUsers);
+  }
 }
 
 function updateModel(userId: number | null, messages: Message[], chatId: number | null, chatusers: ChatUsers[]){
@@ -84,9 +89,24 @@ export function handleUserRegister( jsonResp: any, status: number ){
 
 export function handleUserLogin( jsonResp: any, status: number ){
   console.log("******** ****** POST response handleUserLogin received: ", jsonResp); 
+  // Response: { userId, isOnline, accessToken, refreshToken }
+  console.log("******** ****** POST response handleUserLogin received: ", 
+      jsonResp, "Status: ", status); 
+  if( status == StatusCodes.OK ){
+    setCurrentUserIdRef(jsonResp.userId);
+    sessionStorage.setItem("accessToken", jsonResp.accessToken);
+    sessionStorage.setItem("refreshToken", jsonResp.refreshToken);
+    sessionStorage.setItem("userId", jsonResp.userId.toString());
+    console.log("Login OK", jsonResp);
+  }
+  return; 
+  
+  
+  
   // Response: {userOnline: true, userId: 2, messages: [{},{}] }
- 
   // update messages {messageId: 6, chatId: 3, userId: 2, timestamp: '2025-10-18T11:22:34', text: 'New message'}
+
+
   if ( !Array.isArray(jsonResp.messages) ) return;  
   const messages: Message[] = jsonResp.messages.map((m: any) => ({
     msgId: m.messageId,
@@ -112,7 +132,13 @@ export function handleUserLogin( jsonResp: any, status: number ){
 export function handleUserLogout( jsonResp: any, status: number ){
   console.log("Logout POST response received: ", jsonResp); 
   // Response: {userOnline: false, userId: 2}  
-  updateModel( null, [], null, [] );  
+  //updateModel( null, [], null, [] );  
+  if( status == StatusCodes.OK ) {
+    setCurrentUserIdRef(null);
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("accessToken" );
+    sessionStorage.removeItem("refreshToken" );
+  }
 }
 
 export  function handleNewChatResponse( jsonResp: any, status: number ) {

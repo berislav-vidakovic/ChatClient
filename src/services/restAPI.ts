@@ -55,9 +55,8 @@ async function sendRefreshTokenRequest(
   handleResponse: (data: any, status: number) => void ): Promise<any> {
     const refreshToken = sessionStorage.getItem('refreshToken');  
 
-    sendPOSTRequest('api/auth/refresh', 
-      JSON.stringify({ refreshToken }), 
-      handleResponse);
+  sendPOSTRequest('api/auth/refresh', 
+    JSON.stringify({ refreshToken }), handleResponse);
 }
 
 // Generic POST sending to protected endpoint
@@ -83,7 +82,7 @@ export async function sendPOSTRequestProtected(
   }   
 
   const handleResponseLocal = ( jsonResp: any, status: number ) => {
-    console.log("*** HANDLE handleReponseLocal: ", jsonResp);
+    console.log("*** HANDLE handleResponseLocal: ", jsonResp);
     if( status == StatusCodes.OK ) {
       clientResponseHandler(jsonResp, status ); // shortest happy path
       return;

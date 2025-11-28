@@ -12,6 +12,7 @@ import NewChatDialog from './components/NewChatDialog.tsx'
 import RegisterDialog from './components/RegisterDialog.tsx' 
 import type { User, Message, ChatUsers } from './interfaces.ts';
 import { sendGETRequest, sendPOSTRequest, setLoginDialogRef } from './services/restAPI.ts'
+import { StatusCodes } from 'http-status-codes'
 
 function App() {
   const [isConfigLoaded, setConfigLoaded] = useState<boolean>(false);
@@ -22,7 +23,7 @@ function App() {
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
   const [usersRegistered, setUsersRegistered] = useState<User[]>([]);
   // frontend Model:
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatusers, setChatUsers] = useState<ChatUsers[]>([]);
@@ -61,6 +62,10 @@ function App() {
   */
 
   
+  // 1. isConfigLoaded
+  // 2. isInitialized
+  // 3. isWsConected
+
   // GET users /api/users/all
   useEffect( () => { if( isConfigLoaded ) getAllUsers(
       handleGetUsers); 
@@ -69,32 +74,49 @@ function App() {
       
  
   // WS connect
-  useEffect( () => { if( isConfigLoaded  ) {
-      sessionStorage.setItem("myID", "c98dafe8-9820-48ed-b188-7cb1dde1e565");
+  useEffect( () => { if( isConfigLoaded && isInitialized ) {
       connectWS(setWsConnected); 
     }
-      else console.log("WS-Config not loaded yet");
-  }, [isConfigLoaded]);
+      else console.log("WS-Config not loaded yet or not initialized");
+  }, [isConfigLoaded, isInitialized]);
+
+  // Auto login
+  useEffect( () => { if( isWsConnected ) {
+      refreshLogin(false);
+    }
+      else console.log("Not initialized and/or WS not connected yet");
+  }, [isWsConnected]);
 
   /*
-    // WS health check message
+  // WS health check message
   useEffect( () => { if( isWsConnected && isInitialized) sendWsHealthCheck(); 
       else console.log("WS not established yet");
     }, [isConfigLoaded, isInitialized, isWsConnected]); 
-*/
+  */
 
-  const handleLoginClick = () => {
-    const refreshToken = sessionStorage.getItem('refreshToken');
-    sendPOSTRequest('api/auth/refresh', 
-      JSON.stringify({ refreshToken }), 
-      (jsonResp: any, status: number) => {
-        console.log("Response StatusCode: ", status );
-        console.log("Response to LoginClick: ", jsonResp );
-        sessionStorage.setItem('accessToken', jsonResp.accessToken);
-        sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
-      });
-    //setShowLoginDialog(true);
-  }
+    const refreshLogin = (showLoginDlg: boolean) => {
+      const refreshToken = sessionStorage.getItem('refreshToken');
+      sendPOSTRequest('api/auth/refresh', 
+        JSON.stringify({ refreshToken }), (jsonResp: any, status: number) => {
+          console.log("Response StatusCode: ", status );
+          console.log("Response to LoginClick: ", jsonResp );
+          switch(status)
+          {
+            case StatusCodes.OK:
+              sessionStorage.setItem('accessToken', jsonResp.accessToken);
+              sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
+              sessionStorage.setItem("userId", jsonResp.userId.toString());
+              setCurrentUserId(jsonResp.userId);
+              break;
+            case StatusCodes.UNAUTHORIZED:
+            case StatusCodes.BAD_REQUEST:
+              setShowLoginDialog(showLoginDlg);
+          }
+
+        });
+    }
+  
+  const handleLoginClick = () => { refreshLogin(true) }
 
   return (
     <main className="app-container">
@@ -143,7 +165,7 @@ function App() {
       id="btnLogout" 
       onClick={() => { 
         console.log("Logout clicked!");
-        logoutUser(currentUserId as number);
+        logoutUser(currentUserId as string);
       } }
       disabled={(currentUserId == null)}
     >

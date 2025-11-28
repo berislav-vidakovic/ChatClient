@@ -365,6 +365,7 @@ button:hover {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .user-item {

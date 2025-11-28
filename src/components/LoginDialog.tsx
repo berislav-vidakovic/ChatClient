@@ -1,7 +1,7 @@
 // LoginDialog.tsx
 import type { Dispatch, SetStateAction } from "react";
 import type { User, Message } from '../interfaces.ts';
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { loginUser } from "../services/utils.ts";
 
 
@@ -15,17 +15,27 @@ function LoginDialog({
 ) {
 
   const selectedUserRef = useRef<HTMLSelectElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
+/*
+  useEffect(()=>{
+    let usersOffline = usersRegistered.filter(u => !u.isonline );
+    if( usersOffline.length )
+      selectedUserRef.current!.value = usersOffline[0].userId;
+  }, []);
+  */
   const handleConfirmClick = () => {
      if (!isWsConnected) {
       alert("You are disconnected.");
       setShowLoginDialog(false);    
       return;
     }  
-    const selectedUserId : number = Number(selectedUserRef.current!.value);
+    const selectedUserId : string = selectedUserRef.current!.value;
+    const password: string = passwordRef.current?.value.trim() ?? "";
+
     console.log("Selected user ID:", selectedUserId);
    
-    loginUser(selectedUserId); // async call
+    loginUser(selectedUserId, password); // async call
     setShowLoginDialog(false);    // Close dialog
   };
 
@@ -37,7 +47,6 @@ function LoginDialog({
     <div className="dialog-backdrop">
       <div className="dialog">
         <h3>Select User to Login</h3>
-
         {(
           <select ref={selectedUserRef}>
           {usersRegistered
@@ -49,6 +58,13 @@ function LoginDialog({
             ))
           }
           </select>
+        )}
+
+        {( selectedUserRef &&
+          <input 
+            placeholder="Password"
+            ref={passwordRef}
+          ></input>
         )}
 
         <div className="dialog-buttons">

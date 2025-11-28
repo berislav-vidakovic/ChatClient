@@ -11,7 +11,8 @@
     - [Happy path](#happy-path)  
     - [Invalid accessToken](#invalid-accesstoken)  
     - [Token Validation Flow](#token-validation-flow)  
-6. [Invalid access token retry path for /register endpoint](#6-invalid-access-token-retry-path-for-register-endpoint)
+6. [Invalid access token retry path for /register endpoint](#6-invalid-access-token-retry-path-for-register-endpoint)  
+7. [Login with password and logout – manual and automatic](#7-login-with-password-and-logout---manual-and-automatic)
 
 
 ### 1. Send refresh token on Login button
@@ -109,11 +110,10 @@ Frontend protected endpoint Request workflow
       - on valid password 
         - backend sends new accessToken and refreshToken in Response
         - frontend stores tokens, no second retry call (overkill)
-- Implementation of invalid access token retry path for /register endpoint
-  - TODO in the next step
 
 
-Token Validation Flow
+#### Token Validation Flow
+
 1. AccessToken - no new tokens in Response
 2. RefreshToken - new tokens in Response
 3. Password - new tokens in Response
@@ -133,3 +133,11 @@ Token Validation Flow
   - If refresh fails - raise login dialog (force login)
  
 <img src = "docs/JWTclientFlow.png" style="height:500px;" /> 
+
+### 7. Login with password and logout - manual and automatic
+
+- Added password field into LoginDialog an added password argument
+- Added password param in loginUser (utils.ts)
+- Updated handleUserLogin to store received tokens, userId and setCurrentUserId
+- Auto login and Login button with flag parameter(showLoginDlg)
+- Logout cleaning tokens and userId
