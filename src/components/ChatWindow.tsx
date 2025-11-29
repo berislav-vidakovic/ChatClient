@@ -8,25 +8,28 @@ function ChatWindow( {
       usersRegistered, currentUserId, currentChatId, messages, chatusers }: { 
       usersRegistered: User[];
       currentUserId: string | null;
-      currentChatId: number | null;
+      currentChatId: string | null;
       messages: Message[];    
       chatusers: ChatUsers[];    
     }
 ) { 
   const [messageText, setMessageText] = useState(""); // track textarea input
 
-  const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers);
+  //const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers);
   const chatMessages = messages
     .filter(m => m.chatId==currentChatId)
     .sort((a, b) => a.datetime.getTime()-b.datetime.getTime());
   
+  console.log("*** CHAT MESSAGES: ", ...chatMessages );
+  console.log("*** messages: ", ...messages );
+  
   const handleSend = () => {
     if (!messageText.trim() || currentUserId == null || currentChatId == null) return;
-    sendChatMessage(currentUserId, currentChatId, messageText.trim()); //  send text
+    //sendChatMessage(currentUserId, currentChatId, messageText.trim()); //  send text
     setMessageText(""); //  clear textarea after sending
   };
 
-  // ✅ handle Enter press
+  // handle Enter press
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault(); // prevent newline
@@ -77,7 +80,7 @@ function ChatWindow( {
   useEffect(() => {
   const container = messagesContainerRef.current;
   if (container) {
-    container.scrollTop = container.scrollHeight; // 👈 jump to bottom instantly
+    container.scrollTop = container.scrollHeight; // jump to bottom instantly
     // Or smooth:
     // container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
     }
@@ -86,7 +89,7 @@ function ChatWindow( {
   return (
     <section className="chat-window">
       <h2>
-        {chats.find(c=>c.chatId == currentChatId)?.userNames}
+        {chatusers.find(c=>c.chatId == currentChatId)?.name}
       </h2>
 
 {/*export interface Message {

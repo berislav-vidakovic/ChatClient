@@ -24,7 +24,7 @@ function App() {
   const [usersRegistered, setUsersRegistered] = useState<User[]>([]);
   // frontend Model:
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentChatId, setCurrentChatId] = useState<number | null>(null);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatusers, setChatUsers] = useState<ChatUsers[]>([]);
   
@@ -81,11 +81,11 @@ function App() {
   }, [isConfigLoaded, isInitialized]);
 
   // Auto login
-  useEffect( () => { if( isWsConnected ) {
-      refreshLogin(false);
+  useEffect( () => { if( isWsConnected && isInitialized ) {
+      refreshLogin(true);
     }
       else console.log("Not initialized and/or WS not connected yet");
-  }, [isWsConnected]);
+  }, [isWsConnected, isInitialized]);
 
   /*
   // WS health check message
@@ -94,7 +94,7 @@ function App() {
     }, [isConfigLoaded, isInitialized, isWsConnected]); 
   */
 
-    const refreshLogin = (showLoginDlg: boolean) => {
+    const refreshLogin = (isAutoLogin: boolean) => {
       const refreshToken = sessionStorage.getItem('refreshToken');
       sendPOSTRequest('api/auth/refresh', 
         JSON.stringify({ refreshToken }), (jsonResp: any, status: number) => {
@@ -110,13 +110,12 @@ function App() {
               break;
             case StatusCodes.UNAUTHORIZED:
             case StatusCodes.BAD_REQUEST:
-              setShowLoginDialog(showLoginDlg);
+              setShowLoginDialog(!isAutoLogin);
           }
-
         });
     }
   
-  const handleLoginClick = () => { refreshLogin(true) }
+  const handleLoginClick = () => { refreshLogin(false) }
 
   return (
     <main className="app-container">
@@ -220,7 +219,7 @@ function App() {
         <NewChatDialog
           setShowNewChatDialog={setShowNewChatDialog}
           usersRegistered={usersRegistered}
-          currentUserId = {currentUserId as number}
+          currentUserId = {currentUserId as string}
         />
       )}
 

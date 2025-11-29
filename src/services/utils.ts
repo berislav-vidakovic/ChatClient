@@ -118,6 +118,8 @@ export function createChatList(usersRegistered: User[], chatusers: ChatUsers[], 
         userNames: userNames.map(u=>u.slice(0,2)).join(',')});
   }
   //console.log(...chats);
+
+  
   return chats;
 }
 

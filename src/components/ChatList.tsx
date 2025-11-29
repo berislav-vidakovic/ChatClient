@@ -8,18 +8,19 @@ function ChatList(  {
     usersRegistered, chatusers, currentChatId, setCurrentChatId, isWsConnected  }: { 
     usersRegistered: User[];
     chatusers: ChatUsers[];    
-    currentChatId: number | null;
-    setCurrentChatId: Dispatch<SetStateAction<number | null>>;
+    currentChatId: string | null;
+    setCurrentChatId: Dispatch<SetStateAction<string | null>>;
     isWsConnected: boolean;
   }
 ) {
-  const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers,true);
+  //const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers,true);
+
   return (
     <section className="chat-list">
       <h2>Chats</h2>
       
       {(<ul>
-        {chats.map(chat => (
+        {chatusers.map(chat => (
           <li 
             key={chat.chatId}
             className= {chat.chatId == currentChatId ? 'active-chat' : ''}
@@ -29,7 +30,7 @@ function ChatList(  {
             }}
             style={{ cursor: chat.chatId != currentChatId ? "pointer" : "default" }}
           >
-            Ch.{chat.chatId}: {chat.userNames}
+            {chat.name}
           </li>
         ))}
       </ul>

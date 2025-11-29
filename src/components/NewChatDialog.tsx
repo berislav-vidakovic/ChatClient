@@ -8,20 +8,20 @@ function NewChatDialog({ setShowNewChatDialog, usersRegistered, currentUserId
 }: {
     setShowNewChatDialog: Dispatch<SetStateAction<boolean>>; 
     usersRegistered: User[];
-    currentUserId: number;
+    currentUserId: string;
 
 }
   ) {
-  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
-  const handleToggle = (userId: number) => {
+  const handleToggle = (userId: string) => {
     setSelectedUserIds((prev) =>
       prev.includes(userId) ? prev.filter((u) => u !== userId) : [...prev, userId]
     );
   };
 
   const handleConfirmClick = () => {    
-    createNewChat(currentUserId, selectedUserIds);
+    //createNewChat(currentUserId, selectedUserIds);
     setShowNewChatDialog(false);
   };
 

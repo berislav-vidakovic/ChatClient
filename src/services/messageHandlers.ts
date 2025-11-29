@@ -7,7 +7,7 @@ import { StatusCodes } from "http-status-codes"
 let setInitializedRef:  Dispatch<SetStateAction<boolean>>;
 let setUsersRegisteredRef:  Dispatch<SetStateAction<User[]>>;
 let setCurrentUserIdRef:  Dispatch<SetStateAction<string | null>>; 
-let setCurrentChatIdRef:  Dispatch<SetStateAction<number | null>>; 
+let setCurrentChatIdRef:  Dispatch<SetStateAction<string | null>>; 
 let setMessagesRef:  Dispatch<SetStateAction<Message[]>>; 
 let setChatUsersRef:  Dispatch<SetStateAction<ChatUsers[]>>; 
 
@@ -15,7 +15,7 @@ export function setStateFunctionRefs(
   setInitialized:  Dispatch<SetStateAction<boolean>>,
   setUsersRegistered:  Dispatch<SetStateAction<User[]>>,
   setCurrentUserId:  Dispatch<SetStateAction<string | null>>,
-  setCurrentChatId:  Dispatch<SetStateAction<number | null>>,
+  setCurrentChatId:  Dispatch<SetStateAction<string | null>>,
   setMessages:  Dispatch<SetStateAction<Message[]>>,
   setChatUsers:  Dispatch<SetStateAction<ChatUsers[]>>
 ){
@@ -54,10 +54,10 @@ export function handleGetUsers( jsonResp: any, status: number ) {
   }
 }
 
-function updateModel(userId: number | null, messages: Message[], chatId: number | null, chatusers: ChatUsers[]){
+function updateModel(userId: string | null, messages: Message[], chatId: string | null, chatusers: ChatUsers[]){
   setCurrentUserIdRef(userId);
   sessionStorage.setItem("userId", String(userId));
-  console.log("updateModel - setCurrentUserIdRef", userId);
+  console.log("****** updateModel - setCurrentUserIdRef", userId, " messages: ", messages);
 
   setMessagesRef(messages);  
   setCurrentChatIdRef( chatId);
@@ -99,32 +99,35 @@ export function handleUserLogin( jsonResp: any, status: number ){
     sessionStorage.setItem("userId", jsonResp.userId.toString());
     console.log("Login OK", jsonResp);
   }
-  return; 
+//  return; 
   
+  // Response: {userOnline: true, userId: 2, 
+  //    messages: [{id,chatId,userId,datetime,text}], 
+  //    chats: [{id,userIds:[u1,u2], chatName}]
   
-  
-  // Response: {userOnline: true, userId: 2, messages: [{},{}] }
   // update messages {messageId: 6, chatId: 3, userId: 2, timestamp: '2025-10-18T11:22:34', text: 'New message'}
-
-
   if ( !Array.isArray(jsonResp.messages) ) return;  
   const messages: Message[] = jsonResp.messages.map((m: any) => ({
-    msgId: m.messageId,
+    msgId: m.id,
     chatId: m.chatId,
     userId: m.userId,
-    datetime: new Date(m.timestamp),
+    datetime: new Date(m.datetime),
     text: m.text }));
+  console.log("Received messages: ", ...messages);
+  
  
-  // update chats [{ "chatId": 1, "userIds": [5, 7, 9] }]  
-  if (!Array.isArray(jsonResp.chatUsers)  ) return;  
-  const chatusers: ChatUsers[] = jsonResp.chatUsers.map((cu: any) => ({
-    chatId: cu.chatId,
-    userIds: cu.userIds 
+  // update chats [{ "chatId": 1, "userIds": [5, 7, 9], "name" }]  
+  if (!Array.isArray(jsonResp.chats)  ) return;  
+  const chatusers: ChatUsers[] = jsonResp.chats.map((cu: any) => ({
+    chatId: cu.id,
+    userIds: cu.userIds,
+    name: cu.chatName
   })); 
   console.log("Received chatUsers: ", ...chatusers);
 
   //const chatId : number | null  = messages.length ? Math.min(...messages.map((m: Message) => m.chatId)) : null;
-  const chatId : number | null  = chatusers.length ? Math.min( ...chatusers.map(cu=>cu.chatId)) : null;
+  //const chatId : string | null  = chatusers.length ? Math.min( ...chatusers.map(cu=>cu.chatId)) : null;
+  const chatId : string | null  = chatusers.length ? chatusers[0].chatId : null;
   console.log(" ******** ****** MODEL update: with chatId: ", chatId);
   updateModel( jsonResp.userId, messages, chatId, chatusers );  
 }

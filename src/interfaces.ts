@@ -6,19 +6,20 @@ export interface User {
 };
   
 export interface Message {
-  msgId: number;
-  chatId: number;
-  userId: number;
+  msgId: string;
+  chatId: string;
+  userId: string;
   datetime: Date;
   text: string;
 };
   
 export interface ChatDisplay {
-  chatId: number;
+  chatId: string;
   userNames: string;
 };
 
 export interface ChatUsers {
-  chatId: number;
-  userIds: number[];
+  chatId: string;
+  userIds: string[];
+  name: string;
 };
