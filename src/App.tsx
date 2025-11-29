@@ -3,7 +3,7 @@ import './style.css'
 import { useState, useEffect } from 'react'
 import { loadConfig, initApp, getAllUsers, sendWsHealthCheck, 
   reconnectApp, logoutUser } from './services/utils.ts'
-import { handleGetUsers, handleInit, setStateFunctionRefs } from './services/messageHandlers.ts'
+import { handleGetUsers, parseAndUpdateModel, setStateFunctionRefs } from './services/messageHandlers.ts'
 import { connectWS } from './services/webSocket.ts'
 import ChatList from './components/ChatList.tsx'
 import ChatWindow from './components/ChatWindow.tsx'
@@ -103,10 +103,11 @@ function App() {
           switch(status)
           {
             case StatusCodes.OK:
-              sessionStorage.setItem('accessToken', jsonResp.accessToken);
-              sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
-              sessionStorage.setItem("userId", jsonResp.userId.toString());
-              setCurrentUserId(jsonResp.userId);
+              //sessionStorage.setItem('accessToken', jsonResp.accessToken);
+              //sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
+              //sessionStorage.setItem("userId", jsonResp.userId.toString());
+              //setCurrentUserId(jsonResp.userId);
+              parseAndUpdateModel(jsonResp);
               break;
             case StatusCodes.UNAUTHORIZED:
             case StatusCodes.BAD_REQUEST:

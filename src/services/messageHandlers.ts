@@ -98,9 +98,11 @@ export function handleUserLogin( jsonResp: any, status: number ){
     sessionStorage.setItem("refreshToken", jsonResp.refreshToken);
     sessionStorage.setItem("userId", jsonResp.userId.toString());
     console.log("Login OK", jsonResp);
+    parseAndUpdateModel(jsonResp);
   }
-//  return; 
-  
+}
+
+export function parseAndUpdateModel( jsonResp: any){
   // Response: {userOnline: true, userId: 2, 
   //    messages: [{id,chatId,userId,datetime,text}], 
   //    chats: [{id,userIds:[u1,u2], chatName}]
