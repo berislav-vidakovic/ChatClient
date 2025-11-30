@@ -98,15 +98,11 @@ function App() {
       const refreshToken = sessionStorage.getItem('refreshToken');
       sendPOSTRequest('api/auth/refresh', 
         JSON.stringify({ refreshToken }), (jsonResp: any, status: number) => {
-          console.log("Response StatusCode: ", status );
-          console.log("Response to LoginClick: ", jsonResp );
+          //console.log("Response StatusCode: ", status );
+          //console.log("Response to LoginClick: ", jsonResp );
           switch(status)
           {
             case StatusCodes.OK:
-              //sessionStorage.setItem('accessToken', jsonResp.accessToken);
-              //sessionStorage.setItem('refreshToken', jsonResp.refreshToken);
-              //sessionStorage.setItem("userId", jsonResp.userId.toString());
-              //setCurrentUserId(jsonResp.userId);
               parseAndUpdateModel(jsonResp);
               break;
             case StatusCodes.UNAUTHORIZED:

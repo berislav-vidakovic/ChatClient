@@ -124,8 +124,8 @@ export function createChatList(usersRegistered: User[], chatusers: ChatUsers[], 
 }
 
 
-export function sendChatMessage(currentUserId: number | null, 
-  currentChatId: number | null, message: string){
+export function sendChatMessage(currentUserId: string | null, 
+  currentChatId: string | null, message: string){
   console.log(`Send message: ${message} chatID:${currentChatId} userId:${currentUserId}`);
     //{type="newMessage", status="WsStatus.OK", data = {id,msg,userId,chatId}}
   const id = sessionStorage.getItem("myID");

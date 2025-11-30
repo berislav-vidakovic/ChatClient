@@ -15,7 +15,7 @@ export function setLoginDialogRef(
 
 
 export async function sendGETRequestSync(endpoint: string): Promise<any> {
-    console.log("Sending GET: ", `${URL_BACKEND_HTTP}/${endpoint}` );
+    //console.log("Sending GET: ", `${URL_BACKEND_HTTP}/${endpoint}` );
     const response = await fetch(`${URL_BACKEND_HTTP}/${endpoint}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch test cases: ${response.status}`);
@@ -109,7 +109,7 @@ export async function sendGETRequest(
       endpoint: string, 
       handleResponse: (data: any, status: number) => void ): Promise<any> {
     const getUrl = `${URL_BACKEND_HTTP}/${endpoint}` + `?id=${sessionStorage.getItem("myID")}`;
-    console.log("Sending GET: ", getUrl );
+    //console.log("Sending GET: ", getUrl );
     fetch(getUrl, { 
         method: "GET",
         headers: { 
@@ -138,7 +138,7 @@ export async function sendPOSTRequest(
     msgBody: string, 
     handleResponse: (data: any, status: number) => void ): Promise<any> {
   const postUrl = `${URL_BACKEND_HTTP}/${endpoint}` + `?id=${sessionStorage.getItem("myID")}`;
-  console.log("Sending POST: ", `${postUrl} Body:${msgBody}` );
+  //console.log("Sending POST: ", `${postUrl} Body:${msgBody}` );
   fetch( postUrl, {
           method: "POST",
           headers: { 

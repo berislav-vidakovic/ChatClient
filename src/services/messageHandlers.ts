@@ -115,7 +115,7 @@ export function parseAndUpdateModel( jsonResp: any){
     userId: m.userId,
     datetime: new Date(m.datetime),
     text: m.text }));
-  console.log("Received messages: ", ...messages);
+  //console.log("Received messages: ", ...messages);
   
  
   // update chats [{ "chatId": 1, "userIds": [5, 7, 9], "name" }]  
@@ -125,7 +125,7 @@ export function parseAndUpdateModel( jsonResp: any){
     userIds: cu.userIds,
     name: cu.chatName
   })); 
-  console.log("Received chatUsers: ", ...chatusers);
+  //console.log("Received chatUsers: ", ...chatusers);
 
   //const chatId : number | null  = messages.length ? Math.min(...messages.map((m: Message) => m.chatId)) : null;
   //const chatId : string | null  = chatusers.length ? Math.min( ...chatusers.map(cu=>cu.chatId)) : null;
@@ -234,24 +234,25 @@ function handleWsUserRestoreLogin(jsonMsgData: any ){
 }
 
 async function  handleWsNewMessageSent( jsonMsgData: any ){
-  //  { type = "newMessage", status = "WsStatus.OK", data = new { senderId= userId, userIds, msg } };
-  console.log("handleNewMessageSent:", jsonMsgData.senderId, jsonMsgData.userIds, jsonMsgData.msg );
+  //  { type = "newMessage", status = "WsStatus.OK", 
+  // data = new { senderId= userId, msg } };
+  console.log("handleNewMessageSent:", jsonMsgData );
 
   const message = {
-    msgId: jsonMsgData.msg.messageId,
-    chatId: jsonMsgData.msg.chatId,
-    userId: jsonMsgData.msg.userId,
-    datetime: new Date(jsonMsgData.msg.timestamp),
-    text: jsonMsgData.msg.text };
+    msgId: jsonMsgData.messageId,
+    chatId: jsonMsgData.chatId,
+    userId: jsonMsgData.userId,
+    datetime: new Date(jsonMsgData.datetime),
+    text: jsonMsgData.text };
+  console.log("message to Append:", message);
   
     //const [messages, setMessages] = useState<Message[]>([]);
     // append new message
-    setMessagesRef(prevMessages => [...prevMessages, message]);
-  
+    setMessagesRef(prevMessages => [...prevMessages, message]);  
 }
 
 async function handleWsUserSessionUpdate( jsonMsgData: any ) {
-  console.log("*** Ws-HANDLE User session update: ", jsonMsgData);
+  //console.log("*** Ws-HANDLE User session update: ", jsonMsgData);
   
   // { type: "userSessionUpdate", status: "WsStatus.OK", data: { userId: 1, isOnline: false } }
   const userId = jsonMsgData.userId;

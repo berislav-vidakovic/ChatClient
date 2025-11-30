@@ -20,12 +20,12 @@ function ChatWindow( {
     .filter(m => m.chatId==currentChatId)
     .sort((a, b) => a.datetime.getTime()-b.datetime.getTime());
   
-  console.log("*** CHAT MESSAGES: ", ...chatMessages );
-  console.log("*** messages: ", ...messages );
+  //console.log("*** CHAT MESSAGES: ", ...chatMessages );
+  //console.log("*** messages: ", ...messages );
   
   const handleSend = () => {
     if (!messageText.trim() || currentUserId == null || currentChatId == null) return;
-    //sendChatMessage(currentUserId, currentChatId, messageText.trim()); //  send text
+    sendChatMessage(currentUserId, currentChatId, messageText.trim()); //  send text
     setMessageText(""); //  clear textarea after sending
   };
 
