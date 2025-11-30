@@ -150,5 +150,5 @@ export function createNewChat( creatorId: string, selectedUserIds: string[]){
   const body = JSON.stringify(msg);
   console.log("Sending POST message...", body);
 
-  sendPOSTRequest('api/chat/new', body, handleNewChatResponse);
+  sendPOSTRequestProtected('api/chat/new', body, handleNewChatResponse);
 }

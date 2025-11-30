@@ -94,8 +94,7 @@ export function handleUserLogin( jsonResp: any, status: number ){
       jsonResp, "Status: ", status); 
   if( status == StatusCodes.OK ){
     setCurrentUserIdRef(jsonResp.userId);
-    sessionStorage.setItem("accessToken", jsonResp.accessToken);
-    sessionStorage.setItem("refreshToken", jsonResp.refreshToken);
+    
     sessionStorage.setItem("userId", jsonResp.userId.toString());
     console.log("Login OK", jsonResp);
     parseAndUpdateModel(jsonResp);
@@ -104,8 +103,12 @@ export function handleUserLogin( jsonResp: any, status: number ){
 
 export function parseAndUpdateModel( jsonResp: any){
   // Response: {userOnline: true, userId: 2, 
+  //    accessToken, refreshToken
   //    messages: [{id,chatId,userId,datetime,text}], 
   //    chats: [{id,userIds:[u1,u2], chatName}]
+  
+  sessionStorage.setItem("accessToken", jsonResp.accessToken);
+  sessionStorage.setItem("refreshToken", jsonResp.refreshToken);
   
   // update messages {messageId: 6, chatId: 3, userId: 2, timestamp: '2025-10-18T11:22:34', text: 'New message'}
   if ( !Array.isArray(jsonResp.messages) ) return;  
