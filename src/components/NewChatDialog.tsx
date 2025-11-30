@@ -21,7 +21,7 @@ function NewChatDialog({ setShowNewChatDialog, usersRegistered, currentUserId
   };
 
   const handleConfirmClick = () => {    
-    //createNewChat(currentUserId, selectedUserIds);
+    createNewChat(currentUserId, selectedUserIds);
     setShowNewChatDialog(false);
   };
 

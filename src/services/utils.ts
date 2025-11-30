@@ -143,7 +143,7 @@ export function sendChatMessage(currentUserId: string | null,
 }
 
 
-export function createNewChat( creatorId:number, selectedUserIds: number[]){
+export function createNewChat( creatorId: string, selectedUserIds: string[]){
   console.log("Selected users:", selectedUserIds);
   // { creatorId,  memberIds: [userId1,userId2] }
   const msg = { creatorId, memberIds: selectedUserIds };

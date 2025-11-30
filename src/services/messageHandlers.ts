@@ -146,12 +146,14 @@ export function handleUserLogout( jsonResp: any, status: number ){
   }
 }
 
+// for existing chat set selected upon Reponse - no Ws boradcast
 export  function handleNewChatResponse( jsonResp: any, status: number ) {
-  if( status == StatusCodes.OK ) {
+  // { creatorId, newChatId,  newChatName, userIds: [userId1,userId2] }
+  if( status == StatusCodes.OK ) { // existng
     console.log("EXISTING CHAT: ", jsonResp.newChatId, "USERs:", ...jsonResp.userIds);
     setCurrentChatIdRef(jsonResp.newChatId);
   }
-  else if( status == StatusCodes.CREATED )
+  else if( status == StatusCodes.CREATED ) // new
     console.log("NEW CHAT: ", jsonResp.newChatId, "USERs:", ...jsonResp.userIds);
 }
 
@@ -178,34 +180,33 @@ export async function handleWsMessage( jsonMsg: any ) {
     handleWsNewChatCreated( jsonMsg.data );
 }
 
+// For existing chat no WS  broadcast sent
 function handleWsNewChatCreated( jsonMsgData: any ){
   console.log("*** handleWsNewChatCreated *** ");
-  // { newChatId, userIds, creatorId }
-  const myUserID : number = Number(sessionStorage.getItem("userId"));
-  if ( Number.isNaN(myUserID)) return; // no current user
-  if ( !jsonMsgData.userIds.includes(myUserID) ) return; // current user is not a participant
-  const creatorId: number = jsonMsgData.creatorId;
+  // { creatorId, newChatId,  newChatName, userIds: [userId1,userId2] }
+  const myUserID : string = String(sessionStorage.getItem("userId"));
+  //if ( !jsonMsgData.userIds.includes(myUserID) ) return; // current user is not a participant
+  const creatorId: string = jsonMsgData.creatorId;
   
   // creator - update model with currentChatId = newChatId
-  // participant - update model with current ChatId unchanged or newChatId if no currentChat
-  let currentChatID : number = Number(sessionStorage.getItem("chatId"));
-  if ( Number.isNaN(currentChatID) || creatorId == myUserID ) 
-    currentChatID = jsonMsgData.newChatId;
+  // participant - do nothing 
+  if ( creatorId == myUserID ) {
+    console.log("SET CURRENT CHAT ID");
+    sessionStorage.setItem("chatId", jsonMsgData.newChatId );
+    setCurrentChatIdRef(jsonMsgData.newChatId);
+  }
 
   const newChat : ChatUsers = {
-    chatId: currentChatID,
-    userIds: jsonMsgData.userIds
+    chatId: jsonMsgData.newChatId,
+    userIds: jsonMsgData.userIds,
+    name: jsonMsgData.newChatName
   };
 
-    // append new chat
+  // append new chat
   setChatUsersRef(prevCU => [...prevCU, newChat]);
 
   // update messages
-  setMessagesRef([]);
-
-  // update current chatId
-  setCurrentChatIdRef(currentChatID);
-  sessionStorage.setItem( "chatId", String(currentChatID ));
+  //setMessagesRef([]);
 }
 
 function handleWsUserRestoreLogin(jsonMsgData: any ){
