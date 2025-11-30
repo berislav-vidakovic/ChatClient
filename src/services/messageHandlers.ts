@@ -57,7 +57,7 @@ export function handleGetUsers( jsonResp: any, status: number ) {
 function updateModel(userId: string | null, messages: Message[], chatId: string | null, chatusers: ChatUsers[]){
   setCurrentUserIdRef(userId);
   sessionStorage.setItem("userId", String(userId));
-  console.log("****** updateModel - setCurrentUserIdRef", userId, " messages: ", messages);
+  console.log("****** updateModel - setCurrentUserIdRef", userId, " messages: ", messages, "chatUsers: ", chatusers);
 
   setMessagesRef(messages);  
   setCurrentChatIdRef( chatId);
@@ -109,7 +109,7 @@ export function parseAndUpdateModel( jsonResp: any){
   
   sessionStorage.setItem("accessToken", jsonResp.accessToken);
   sessionStorage.setItem("refreshToken", jsonResp.refreshToken);
-  
+
   // update messages {messageId: 6, chatId: 3, userId: 2, timestamp: '2025-10-18T11:22:34', text: 'New message'}
   if ( !Array.isArray(jsonResp.messages) ) return;  
   const messages: Message[] = jsonResp.messages.map((m: any) => ({
@@ -146,6 +146,8 @@ export function handleUserLogout( jsonResp: any, status: number ){
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("accessToken" );
     sessionStorage.removeItem("refreshToken" );
+    updateModel( null, [], null, [] );  
+    setUsersRegisteredRef([]);
   }
 }
 
