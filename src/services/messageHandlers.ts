@@ -157,7 +157,7 @@ export function handleUserLogout( jsonResp: any, status: number ){
     sessionStorage.removeItem("accessToken" );
     sessionStorage.removeItem("refreshToken" );
     updateModel( null, [], null, [] );  
-    setUsersRegisteredRef([]);
+    //setUsersRegisteredRef([]);
     sessionStorage.removeItem("userId");
   }
 }
