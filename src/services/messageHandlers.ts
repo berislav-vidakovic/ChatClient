@@ -2,7 +2,9 @@
 import type { User, Message, ChatUsers } from '../interfaces.ts';
 import type {  Dispatch, SetStateAction } from "react";
 import { reconnectApp  } from './utils.ts';
-import { StatusCodes } from "http-status-codes"
+import { StatusCodes } from "http-status-codes";
+import { getDecodedToken } from "./jwt";
+
 
 let setInitializedRef:  Dispatch<SetStateAction<boolean>>;
 let setUsersRegisteredRef:  Dispatch<SetStateAction<User[]>>;
@@ -10,6 +12,8 @@ let setCurrentUserIdRef:  Dispatch<SetStateAction<string | null>>;
 let setCurrentChatIdRef:  Dispatch<SetStateAction<string | null>>; 
 let setMessagesRef:  Dispatch<SetStateAction<Message[]>>; 
 let setChatUsersRef:  Dispatch<SetStateAction<ChatUsers[]>>; 
+let setCurrentuserClaimsRef:  Dispatch<SetStateAction<string[]>>;
+
 
 export function setStateFunctionRefs(
   setInitialized:  Dispatch<SetStateAction<boolean>>,
@@ -17,7 +21,8 @@ export function setStateFunctionRefs(
   setCurrentUserId:  Dispatch<SetStateAction<string | null>>,
   setCurrentChatId:  Dispatch<SetStateAction<string | null>>,
   setMessages:  Dispatch<SetStateAction<Message[]>>,
-  setChatUsers:  Dispatch<SetStateAction<ChatUsers[]>>
+  setChatUsers:  Dispatch<SetStateAction<ChatUsers[]>>,
+  setCurrentuserClaims:  Dispatch<SetStateAction<string[]>>,
 ){
     setInitializedRef = setInitialized;
     setUsersRegisteredRef = setUsersRegistered;
@@ -25,6 +30,7 @@ export function setStateFunctionRefs(
     setCurrentChatIdRef = setCurrentChatId;
     setMessagesRef = setMessages;
     setChatUsersRef = setChatUsers;
+    setCurrentuserClaimsRef = setCurrentuserClaims; 
 }
 
 export function handleInit( jsonResp: any ) {
@@ -64,6 +70,10 @@ function updateModel(userId: string | null, messages: Message[], chatId: string 
   setChatUsersRef(chatusers);
 
   sessionStorage.setItem("chatId", String(chatId));
+
+  // set current user claims
+  const token = getDecodedToken();
+  setCurrentuserClaimsRef(token?.claims ?? []);
 }
 
 export function isResetMessageReceived( jsonResp: any ) : boolean {
@@ -142,12 +152,13 @@ export function handleUserLogout( jsonResp: any, status: number ){
   // Response: {userOnline: false, userId: 2}  
   //updateModel( null, [], null, [] );  
   if( status == StatusCodes.OK ) {
-    setCurrentUserIdRef(null);
-    sessionStorage.removeItem("userId");
+    //setCurrentUserIdRef(null);
+    //sessionStorage.removeItem("userId");
     sessionStorage.removeItem("accessToken" );
     sessionStorage.removeItem("refreshToken" );
     updateModel( null, [], null, [] );  
     setUsersRegisteredRef([]);
+    sessionStorage.removeItem("userId");
   }
 }
 
@@ -275,6 +286,7 @@ async function handleWsUserSessionUpdate( jsonMsgData: any ) {
   if( !isOnline && userId == storedCurrentUserId ) {
     console.log( "******** FORCING Logout .... **********");
     updateModel( null, [], null, [] );  
+    sessionStorage.removeItem("userId");
   }
 }
 

@@ -141,3 +141,40 @@ Frontend protected endpoint Request workflow
 - Updated handleUserLogin to store received tokens, userId and setCurrentUserId
 - Auto login and Login button with flag parameter(showLoginDlg)
 - Logout cleaning tokens and userId
+
+### 8. Role-Based Access Control (RBAC)
+
+#### Install JWT decoder library:
+
+  ```ts
+  npm install jwt-decode
+  ```
+
+#### Create helper file
+
+  ```ts
+  import { jwtDecode } from "jwt-decode";
+
+  export interface DecodedToken {
+    sub: string;        // username
+    userId: string;
+    roles?: string[];
+    claims?: string[];
+    exp: number;
+    iat: number;
+  }
+
+  export function getDecodedToken(): DecodedToken | null {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) return null;
+    try {
+      return jwtDecode<DecodedToken>(token);
+    } 
+    catch (err) {
+      console.error("Invalid JWT:", err);
+      return null;
+    }
+  }
+  ```
+
+  

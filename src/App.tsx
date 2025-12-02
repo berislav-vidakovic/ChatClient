@@ -24,7 +24,11 @@ function App() {
   const [usersRegistered, setUsersRegistered] = useState<User[]>([]);
   // frontend Model:
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+//  const [currentUserClaims, setCurrentUserClaims] = useState<string[]>(["claim1","claim2"]);
+  const [currentUserClaims, setCurrentUserClaims] = useState<string[]>([]);
+
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatusers, setChatUsers] = useState<ChatUsers[]>([]);
   
@@ -33,7 +37,7 @@ function App() {
   useEffect( () => { 
     loadConfig(setConfigLoaded); 
     setStateFunctionRefs(setInitialized, setUsersRegistered, setCurrentUserId, 
-      setCurrentChatId, setMessages, setChatUsers );
+      setCurrentChatId, setMessages, setChatUsers, setCurrentUserClaims );
     setLoginDialogRef(setShowLoginDialog);
   }, []);
 
@@ -107,6 +111,7 @@ function App() {
               break;
             case StatusCodes.UNAUTHORIZED:
             case StatusCodes.BAD_REQUEST:
+              console.log("BAD REQUEST, isAutoLogin=", isAutoLogin);
               setShowLoginDialog(!isAutoLogin);
           }
         });
@@ -149,9 +154,18 @@ function App() {
     </button>
 
     {currentUserId && (
-      <label>
+      <div>
+      <div>
         Logged in as: {usersRegistered.find(u=>u.userId==currentUserId)?.fullname}
-      </label>)
+      </div>
+      <div>claims: {
+        <label>  
+          {currentUserClaims.join(', ')}
+        </label>
+       }
+      </div>  
+      </div>
+    )
     }
 
   </div>
