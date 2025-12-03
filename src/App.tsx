@@ -238,6 +238,7 @@ function App() {
         <UsersDialog
           setShowUsersRoles={setShowUsersRoles}
           usersRegistered={usersRegistered}  
+          setUsersRegistered={setUsersRegistered}
           isWsConnected={isWsConnected}  
           availableRoles={availableRoles}
         />

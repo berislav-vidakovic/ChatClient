@@ -188,6 +188,14 @@ export  function handleNewChatResponse( jsonResp: any, status: number ) {
     console.log("NEW CHAT: ", jsonResp.newChatId, "USERs:", ...jsonResp.userIds);
 }
 
+export  function handleUserRoleUpdate( jsonResp: any, status: number ) {
+  console.log( "handleUserRoleUpdate ", jsonResp)
+
+ 
+}
+
+
+
 // -------------- WS message handlers ------------------------------------------
 export async function handleWsMessage( jsonMsg: any ) {
    if( isResetMessageReceived(jsonMsg.data) ){

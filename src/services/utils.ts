@@ -1,6 +1,6 @@
 import { sendGETRequest, sendPOSTRequest, sendPOSTRequestProtected } from './restAPI.ts'
 import { handleUserRegister, 
-  handleUserLogin, handleUserLogout, handleNewChatResponse } from './messageHandlers.ts'
+  handleUserLogin, handleUserLogout, handleNewChatResponse, handleUserRoleUpdate } from './messageHandlers.ts'
 import { sendWsMessage } from './webSocket.ts'
 import type { User, Message, ChatDisplay, ChatUsers } from '../interfaces.ts';
 import type { Dispatch, SetStateAction } from "react";
@@ -151,4 +151,12 @@ export function createNewChat( creatorId: string, selectedUserIds: string[]){
   console.log("Sending POST message...", body);
 
   sendPOSTRequestProtected('api/chat/new', body, handleNewChatResponse);
+}
+
+
+export function requestUserRoleUpdate( userId: string, userRoles: string[] ){
+  const msg = { userId, userRoles };
+  const body = JSON.stringify(msg);
+  sendPOSTRequestProtected('api/users/roles', body, handleUserRoleUpdate);
+
 }
