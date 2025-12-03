@@ -1,5 +1,5 @@
 // messageHandlers.ts
-import type { User, Message, ChatUsers } from '../interfaces.ts';
+import type { User, Message, ChatUsers, Role } from '../interfaces.ts';
 import type {  Dispatch, SetStateAction } from "react";
 import { reconnectApp  } from './utils.ts';
 import { StatusCodes } from "http-status-codes";
@@ -13,6 +13,8 @@ let setCurrentChatIdRef:  Dispatch<SetStateAction<string | null>>;
 let setMessagesRef:  Dispatch<SetStateAction<Message[]>>; 
 let setChatUsersRef:  Dispatch<SetStateAction<ChatUsers[]>>; 
 let setCurrentuserClaimsRef:  Dispatch<SetStateAction<string[]>>;
+let setAvailableRolesRef:  Dispatch<SetStateAction<Role[]>>;
+
 
 
 export function setStateFunctionRefs(
@@ -23,6 +25,8 @@ export function setStateFunctionRefs(
   setMessages:  Dispatch<SetStateAction<Message[]>>,
   setChatUsers:  Dispatch<SetStateAction<ChatUsers[]>>,
   setCurrentuserClaims:  Dispatch<SetStateAction<string[]>>,
+  setAvailableRoles:  Dispatch<SetStateAction<Role[]>>
+  
 ){
     setInitializedRef = setInitialized;
     setUsersRegisteredRef = setUsersRegistered;
@@ -31,6 +35,7 @@ export function setStateFunctionRefs(
     setMessagesRef = setMessages;
     setChatUsersRef = setChatUsers;
     setCurrentuserClaimsRef = setCurrentuserClaims; 
+    setAvailableRolesRef = setAvailableRoles;
 }
 
 export function handleInit( jsonResp: any ) {
@@ -47,12 +52,22 @@ export function handleGetUsers( jsonResp: any, status: number ) {
 
   if( status == StatusCodes.OK ){
     const mappedUsers: User[] = jsonResp.users.map((u: any) => ({
-      userId: u.id,
-      login: u.login,
-      fullname: u.fullName,  
-      isonline: u.isOnline   
+      userId: u.user.id,
+      login: u.user.login,
+      fullname: u.user.fullName,  
+      isonline: u.user.isOnline,
+      roles: u.user.roles
     }));
     console.log("MAPPED Users: ", mappedUsers );
+
+
+    const allRoles: Role[] = jsonResp.roles.map((r: any) => ({
+      role: r.role,
+      claims: r.claims
+    }));
+    setAvailableRolesRef(allRoles);
+    console.log("Available Roles: ", allRoles );
+
 
     // Update React state - ref. to setUsersRegistered defined in App.tsx
     setInitializedRef(true);

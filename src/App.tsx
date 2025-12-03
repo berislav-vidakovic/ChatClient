@@ -8,9 +8,10 @@ import { connectWS } from './services/webSocket.ts'
 import ChatList from './components/ChatList.tsx'
 import ChatWindow from './components/ChatWindow.tsx'
 import LoginDialog from './components/LoginDialog.tsx' 
+import UsersDialog from './components/UsersDialog.tsx' 
 import NewChatDialog from './components/NewChatDialog.tsx' 
 import RegisterDialog from './components/RegisterDialog.tsx' 
-import type { User, Message, ChatUsers } from './interfaces.ts';
+import type { User, Message, ChatUsers, Role } from './interfaces.ts';
 import { sendGETRequest, sendPOSTRequest, setLoginDialogRef } from './services/restAPI.ts'
 import { StatusCodes } from 'http-status-codes'
 
@@ -20,12 +21,15 @@ function App() {
   const [isWsConnected, setWsConnected] = useState<boolean>(false);
   const [showLoginDialog, setShowLoginDialog] = useState<boolean>(false);
   const [showNewChatDialog, setShowNewChatDialog] = useState<boolean>(false);
+  const [showUsersRoles, setShowUsersRoles] = useState<boolean>(false);
   const [showRegisterDialog, setShowRegisterDialog] = useState<boolean>(false);
   const [usersRegistered, setUsersRegistered] = useState<User[]>([]);
   // frontend Model:
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 //  const [currentUserClaims, setCurrentUserClaims] = useState<string[]>(["claim1","claim2"]);
   const [currentUserClaims, setCurrentUserClaims] = useState<string[]>([]);
+
+  const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
 
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
@@ -37,7 +41,7 @@ function App() {
   useEffect( () => { 
     loadConfig(setConfigLoaded); 
     setStateFunctionRefs(setInitialized, setUsersRegistered, setCurrentUserId, 
-      setCurrentChatId, setMessages, setChatUsers, setCurrentUserClaims );
+      setCurrentChatId, setMessages, setChatUsers, setCurrentUserClaims, setAvailableRoles );
     setLoginDialogRef(setShowLoginDialog);
   }, []);
 
@@ -187,6 +191,12 @@ function App() {
     >
       New Chat
     </button>
+     <button 
+      id="btnUserRoles" 
+      onClick={() => setShowUsersRoles(true)}
+    >
+      Users and Roles
+    </button>
   </div>
 
 </header>
@@ -221,6 +231,15 @@ function App() {
           setShowLoginDialog={setShowLoginDialog}
           usersRegistered={usersRegistered}  
           isWsConnected={isWsConnected}  
+        />
+      )}
+
+      {showUsersRoles && (
+        <UsersDialog
+          setShowUsersRoles={setShowUsersRoles}
+          usersRegistered={usersRegistered}  
+          isWsConnected={isWsConnected}  
+          availableRoles={availableRoles}
         />
       )}
 

@@ -3,6 +3,7 @@ export interface User {
   login: string;
   fullname: string;
   isonline: boolean;
+  roles: string[];
 };
   
 export interface Message {
@@ -23,3 +24,8 @@ export interface ChatUsers {
   userIds: string[];
   name: string;
 };
+
+export interface Role {
+  role: string;
+  claims: string[];
+}

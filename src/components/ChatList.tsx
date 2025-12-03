@@ -45,7 +45,9 @@ function ChatList(  {
               .sort((a, b) => a.fullname.localeCompare(b.fullname) )
               .map((u) => ( 
                 <li key={u.userId} className="user-item">               
-                  {u.fullname} 
+                  {u.fullname} <br />
+                  ({u.roles}) <br />
+                  {u.claims}
                   <span
                     className={`status-dot ${
                       u.isonline ? "status-online" : "status-offline"
