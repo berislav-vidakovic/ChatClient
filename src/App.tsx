@@ -162,12 +162,14 @@ function App() {
         <div>
           Logged in as: {usersRegistered.find(u=>u.userId==currentUserId)?.fullname}
         </div>
+        {/*
         <div>Claims: {
           <label>  
             {currentUserClaims.join(', ')}
           </label>
         }
         </div>  
+        */}
       </div> )}
 
   </div>
@@ -238,7 +240,6 @@ function App() {
         <UsersDialog
           setShowUsersRoles={setShowUsersRoles}
           usersRegistered={usersRegistered}  
-          setUsersRegistered={setUsersRegistered}
           isWsConnected={isWsConnected}  
           availableRoles={availableRoles}
         />

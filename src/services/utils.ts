@@ -85,7 +85,7 @@ export async function registerUser(
   const body = JSON.stringify({ login, fullname, password } );
   //{ register: { login, fullname } 
   
-  sendPOSTRequestProtected('api/users/register', body, handleUserRegister);
+  sendPOSTRequest('api/users/register', body, handleUserRegister);
 
   console.log("POST sending: ", body );
 }
@@ -105,19 +105,13 @@ export async function logoutUser(userId: string) {
   console.log("POST sending: ", body );
 }
 
-export function createChatList(usersRegistered: User[], chatusers: ChatUsers[], shorten: boolean = false): ChatDisplay[]  {
+
+export function createChatList(chatusers: ChatUsers[]): ChatUsers[]  {
   
-  const chats: ChatDisplay[] = [];
-  for( let cu of chatusers ){
-    const userNames : string[] = 
-      usersRegistered.filter(u=>cu.userIds.includes(u.userId)).map(u=>u.fullname);
-    if( !shorten )
-      chats.push({chatId: cu.chatId, userNames: userNames.join(',')});     
-    else  
-      chats.push({chatId: cu.chatId, 
-        userNames: userNames.map(u=>u.slice(0,2)).join(',')});
-  }
-  //console.log(...chats);
+  const chats: ChatUsers[] = [];
+  
+
+
 
   
   return chats;

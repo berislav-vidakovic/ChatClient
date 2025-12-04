@@ -2,16 +2,15 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { User, Role } from '../interfaces.ts';
 import { useEffect, useRef, useState } from "react";
-import { loginUser, requestUserRoleUpdate } from "../services/utils.ts";
+import { requestUserRoleUpdate } from "../services/utils.ts";
 
 
 
 function UsersDialog({ 
-    setShowUsersRoles, usersRegistered, setUsersRegistered, isWsConnected, availableRoles
+    setShowUsersRoles, usersRegistered, isWsConnected, availableRoles
   }: { 
     setShowUsersRoles: Dispatch<SetStateAction<boolean>>;
     usersRegistered: User[];
-    setUsersRegistered: Dispatch<SetStateAction<User[]>>;
     isWsConnected: boolean;
     availableRoles: Role[]
  }
@@ -53,15 +52,6 @@ function UsersDialog({
     console.log("selectedUser.roles:", ...userRoles);
     //console.log("availableRoles:", availableRoles);
     requestUserRoleUpdate( selectedUserId, userRoles );
-    
-    // Update usersRegistered with the selected roles
-    setUsersRegistered(prevUsers => 
-      prevUsers.map(user =>
-        user.userId === selectedUserId
-          ? { ...user, roles: userRoles } // <-- update roles
-          : user
-      )
-    );
 
     setShowUsersRoles(false);    // Close dialog
   };
@@ -69,13 +59,6 @@ function UsersDialog({
   const handleCancelClick = () => {
     setShowUsersRoles(false);
   };
-
- 
-
-  console.log("usersRegistered:", usersRegistered);
-  console.log("availableRoles:", availableRoles);
-  console.log("selectedUserId:", selectedUserId);
-  console.log("selectedUser:", selectedUser);
 
   return (
     <div className="dialog-backdrop">
@@ -107,7 +90,7 @@ function UsersDialog({
                 <label key={role.role} className="user-checkbox-item">
                   <input
                     type="checkbox"
-                    checked={userRoles.includes(role.role)}
+                    checked={userRoles && userRoles.includes(role.role)}
                     onChange={() => {
                       if (userRoles.includes(role.role)) {
                         // Remove role
@@ -127,7 +110,8 @@ function UsersDialog({
            <label>Claims: </label>
           <div className="claims-list">
             {(() => {
-              const roles = availableRoles.filter(r => userRoles.includes(r.role));
+              const roles = userRoles ? availableRoles.filter(r => userRoles.includes(r.role))
+                                      : [];
               const claims = new Set<string>();
               for (let role of roles) {
                 for (let claim of role.claims) {
@@ -145,7 +129,10 @@ function UsersDialog({
         <div className="dialog-buttons">
           {(
             <section>
-              <button onClick={handleConfirmClick} >
+              <button 
+                onClick={handleConfirmClick} 
+                disabled={!userRoles.length}
+              >
                 Confirm
               </button>
               <button onClick={handleCancelClick} >

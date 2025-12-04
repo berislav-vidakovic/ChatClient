@@ -15,7 +15,7 @@ function ChatWindow( {
 ) { 
   const [messageText, setMessageText] = useState(""); // track textarea input
 
-  //const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers);
+  // filter messages by current chat
   const chatMessages = messages
     .filter(m => m.chatId==currentChatId)
     .sort((a, b) => a.datetime.getTime()-b.datetime.getTime());

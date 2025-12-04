@@ -13,8 +13,6 @@ function ChatList(  {
     isWsConnected: boolean;
   }
 ) {
-  //const chats : ChatDisplay[] = createChatList(usersRegistered, chatusers,true);
-
   return (
     <section className="chat-list">
       <h2>Chats</h2>
@@ -24,8 +22,9 @@ function ChatList(  {
           <li 
             key={chat.chatId}
             className= {chat.chatId == currentChatId ? 'active-chat' : ''}
-            onClick={() => { 
-              setCurrentChatId(chat.chatId);
+            onClick={() => {
+              setCurrentChatId(chat.chatId); //This triggers a re-render 
+              // of all components that receive currentChatId.
               sessionStorage.setItem("chatId", String(chat.chatId));
             }}
             style={{ cursor: chat.chatId != currentChatId ? "pointer" : "default" }}
@@ -46,8 +45,7 @@ function ChatList(  {
               .map((u) => ( 
                 <li key={u.userId} className="user-item">               
                   {u.fullname} <br />
-                  ({u.roles}) <br />
-                  {u.claims}
+                  ({u.roles.join(',')}) <br />                  
                   <span
                     className={`status-dot ${
                       u.isonline ? "status-online" : "status-offline"

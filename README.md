@@ -185,11 +185,13 @@ Frontend protected endpoint Request workflow
     <div>
       Logged in as: {usersRegistered.find(u=>u.userId==currentUserId)?.fullname}
     </div>
+    {/*
     <div>Claims: {
       <label>  
         {currentUserClaims.join(', ')}
       </label>
     }
     </div>  
+    */}
   </div> )}
   ```

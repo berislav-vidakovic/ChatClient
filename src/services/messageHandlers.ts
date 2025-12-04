@@ -189,9 +189,7 @@ export  function handleNewChatResponse( jsonResp: any, status: number ) {
 }
 
 export  function handleUserRoleUpdate( jsonResp: any, status: number ) {
-  console.log( "handleUserRoleUpdate ", jsonResp)
-
- 
+  console.log( "handleUserRoleUpdate ", jsonResp, "status=", status); 
 }
 
 
@@ -217,32 +215,51 @@ export async function handleWsMessage( jsonMsg: any ) {
     handleWsNewMessageSent( jsonMsg.data );
   else if( jsonMsg.type == "newChatCreated" )
     handleWsNewChatCreated( jsonMsg.data );
+  else if( jsonMsg.type == "userRoles" )
+    handleWsUserRoles( jsonMsg.data );
+}
+
+function handleWsUserRoles( jsonMsgData: any ){
+  // {userId, userRoles}
+   // Update usersRegistered with the selected roles
+  console.log("*** handleWsUserRoles ***");
+  setUsersRegisteredRef(prevUsers => 
+    prevUsers.map(user =>
+      user.userId === jsonMsgData.userId
+        ? { ...user, roles: jsonMsgData.userRoles } // <-- update roles
+        : user
+    )
+  );
 }
 
 // For existing chat no WS  broadcast sent
 function handleWsNewChatCreated( jsonMsgData: any ){
   console.log("*** handleWsNewChatCreated *** ");
   // { creatorId, newChatId,  newChatName, userIds: [userId1,userId2] }
+  // creatorid is included in userIds
   const myUserID : string = String(sessionStorage.getItem("userId"));
   //if ( !jsonMsgData.userIds.includes(myUserID) ) return; // current user is not a participant
   const creatorId: string = jsonMsgData.creatorId;
   
   // creator - update model with currentChatId = newChatId
-  // participant - do nothing 
+  // participant - update model
   if ( creatorId == myUserID ) {
     console.log("SET CURRENT CHAT ID");
     sessionStorage.setItem("chatId", jsonMsgData.newChatId );
     setCurrentChatIdRef(jsonMsgData.newChatId);
+  }  
+
+  if( jsonMsgData.userIds.includes( myUserID )) {
+    const newChat : ChatUsers = {
+      chatId: jsonMsgData.newChatId,
+      userIds: jsonMsgData.userIds,
+      name: jsonMsgData.newChatName
+    };
+
+    // append new chat
+    setChatUsersRef(prevCU => [...prevCU, newChat]);
   }
-
-  const newChat : ChatUsers = {
-    chatId: jsonMsgData.newChatId,
-    userIds: jsonMsgData.userIds,
-    name: jsonMsgData.newChatName
-  };
-
-  // append new chat
-  setChatUsersRef(prevCU => [...prevCU, newChat]);
+  
 
   // update messages
   //setMessagesRef([]);
@@ -322,6 +339,7 @@ export function handleWsUserRegister( jsonResp: any ){
       login: jsonResp.user.login,
       fullname: jsonResp.user.fullName,
       isonline: jsonResp.user.isOnline,
+      roles: jsonResp.user.roles
     };
     // Update frontend state (append to existing users list)    
     setUsersRegisteredRef(prev => {
