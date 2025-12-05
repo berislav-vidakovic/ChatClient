@@ -213,6 +213,7 @@ function App() {
               currentChatId = {currentChatId}
               setCurrentChatId = {setCurrentChatId}
               isWsConnected={isWsConnected}
+              messages={messages}
             />
           )}
 

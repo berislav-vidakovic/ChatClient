@@ -14,10 +14,6 @@ export interface Message {
   text: string;
 };
   
-export interface ChatDisplay {
-  chatId: string;
-  userNames: string;
-};
 
 export interface ChatUsers {
   chatId: string;

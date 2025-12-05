@@ -2,7 +2,7 @@ import { sendGETRequest, sendPOSTRequest, sendPOSTRequestProtected } from './res
 import { handleUserRegister, 
   handleUserLogin, handleUserLogout, handleNewChatResponse, handleUserRoleUpdate } from './messageHandlers.ts'
 import { sendWsMessage } from './webSocket.ts'
-import type { User, Message, ChatDisplay, ChatUsers } from '../interfaces.ts';
+import type { User, Message, ChatUsers } from '../interfaces.ts';
 import type { Dispatch, SetStateAction } from "react";
 
 
