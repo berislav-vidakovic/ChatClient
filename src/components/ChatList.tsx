@@ -1,7 +1,6 @@
 // ChatList.tsx
 import type { User, ChatUsers, Message } from '../interfaces.ts'
 import type { Dispatch, SetStateAction } from "react";
-import { createChatList  } from '../services/utils.ts';
 
 
 function ChatList(  { 
@@ -14,21 +13,6 @@ function ChatList(  {
     messages: Message[];
   }
 ) {
-
-/*export interface Message {
-    msgId: string;
-    chatId: string;
-    userId: string;
-    datetime: Date;
-    text: string;
-  };
-  export interface ChatUsers {
-    chatId: string;
-    userIds: string[];
-    name: string;
-  }; 
-  messages
-  */
 
   const getLastMessage = ( chatId: string ) => {
     const chatMsgs = messages.filter(m=>m.chatId ==chatId );

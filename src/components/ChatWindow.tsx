@@ -1,7 +1,7 @@
 //ChatWindow.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import type { User, Message, ChatUsers } from '../interfaces.ts'
-import { createChatList, sendChatMessage  } from '../services/utils.ts';
+import { sendChatMessage  } from '../services/utils.ts';
 
 
 function ChatWindow( { 

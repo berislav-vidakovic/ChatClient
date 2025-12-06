@@ -1,14 +1,14 @@
 import './App.css'
 import './style.css'
 import { useState, useEffect } from 'react'
-import { loadConfig, initApp, getAllUsers, sendWsHealthCheck, 
-  reconnectApp, logoutUser } from './services/utils.ts'
+import { loadConfig, getAllUsers, reconnectApp, logoutUser } from './services/utils.ts'
 import { handleGetUsers, parseAndUpdateModel, setStateFunctionRefs } from './services/messageHandlers.ts'
 import { connectWS } from './services/webSocket.ts'
 import ChatList from './components/ChatList.tsx'
 import ChatWindow from './components/ChatWindow.tsx'
 import LoginDialog from './components/LoginDialog.tsx' 
-import UsersDialog from './components/UsersDialog.tsx' 
+
+import UsersDialog from './components/UsersDialog' 
 import NewChatDialog from './components/NewChatDialog.tsx' 
 import RegisterDialog from './components/RegisterDialog.tsx' 
 import type { User, Message, ChatUsers, Role } from './interfaces.ts';
@@ -26,16 +26,11 @@ function App() {
   const [usersRegistered, setUsersRegistered] = useState<User[]>([]);
   // frontend Model:
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-//  const [currentUserClaims, setCurrentUserClaims] = useState<string[]>(["claim1","claim2"]);
   const [currentUserClaims, setCurrentUserClaims] = useState<string[]>([]);
-
   const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
-
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatusers, setChatUsers] = useState<ChatUsers[]>([]);
-  
 
   // Config - backend URL for HTTP and WS
   useEffect( () => { 
@@ -60,15 +55,6 @@ function App() {
   function handlePingDbResponse( jsonResp: any ) {
     console.log("Response to GET PINGDB: ", jsonResp );
   } 
-
-
-  /*
-  // GET Init - the first message to update clientID - api/initclient
-  useEffect( () => { if( isConfigLoaded) initApp(handleInit ); 
-      else console.log("Init-Config not loaded yet");
-  }, [isConfigLoaded]);
-  */
-
   
   // 1. isConfigLoaded
   // 2. isInitialized
@@ -94,13 +80,6 @@ function App() {
     }
       else console.log("Not initialized and/or WS not connected yet");
   }, [isWsConnected, isInitialized]);
-
-  /*
-  // WS health check message
-  useEffect( () => { if( isWsConnected && isInitialized) sendWsHealthCheck(); 
-      else console.log("WS not established yet");
-    }, [isConfigLoaded, isInitialized, isWsConnected]); 
-  */
 
     const refreshLogin = (isAutoLogin: boolean) => {
       const refreshToken = sessionStorage.getItem('refreshToken');
@@ -264,11 +243,5 @@ function App() {
     </main>
   );
 }
-
-// TODO: implement user registration
-// App opens Reg dlg
-// Reg dlg knows login and fullname
-  // calls reguser(def. in utils) with handle response (def. in eventHandlers)
-    // handle response updates client user model - usersRegistered (def. in App.tsx)
 
 export default App

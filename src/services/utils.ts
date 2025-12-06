@@ -2,10 +2,7 @@ import { sendGETRequest, sendPOSTRequest, sendPOSTRequestProtected } from './res
 import { handleUserRegister, 
   handleUserLogin, handleUserLogout, handleNewChatResponse, handleUserRoleUpdate } from './messageHandlers.ts'
 import { sendWsMessage } from './webSocket.ts'
-import type { User, Message, ChatUsers } from '../interfaces.ts';
 import type { Dispatch, SetStateAction } from "react";
-
-
 
 const currentEnv = import.meta.env.VITE_ENV as string;
 export let URL_BACKEND_HTTP = "";
@@ -45,14 +42,6 @@ export async function loadConfig(
     }
 }
 
-export async function initApp(
-  handleInit: (data: any) => void
-) {
-    const endpoint = 'api/initclient';
-    sendGETRequest(endpoint, handleInit);
-    
-    console.log("GET init sent...");
-}
 
 export async function getAllUsers(
   handleGetUsers: (data: any, status: number) => void
@@ -61,24 +50,6 @@ export async function getAllUsers(
     console.log("GET users sent...");
 }
 
-export async function sendWsHealthCheck() {
-    /*
-    if( !sessionStorage.getItem("testBreak") ) {
-      sessionStorage.setItem("myID", "123");
-      sessionStorage.setItem("testBreak", true);
-    } */
-    const id = sessionStorage.getItem("myID");
-
-    const msg = { type: "healthCheck", status: "WsStatus.Request", data: { id, content: "ping" } };
-
-      // { type = "health", status = "WsStatus.OK", data = new { response = "pong" } }
-
-
-    const strJson = JSON.stringify(msg);
-    console.log("Sending WS message...", strJson);
-    sendWsMessage(strJson);
-    console.log("WS message sent ...");
-}
 
 export async function registerUser(
     login: string, fullname: string, password:string) {
@@ -103,18 +74,6 @@ export async function logoutUser(userId: string) {
   
   sendPOSTRequest('api/auth/logout', body, handleUserLogout);
   console.log("POST sending: ", body );
-}
-
-
-export function createChatList(chatusers: ChatUsers[]): ChatUsers[]  {
-  
-  const chats: ChatUsers[] = [];
-  
-
-
-
-  
-  return chats;
 }
 
 
