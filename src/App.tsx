@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { loadConfig, getAllUsers, reconnectApp, logoutUser } from './services/utils.ts'
 import { handleGetUsers, parseAndUpdateModel, setStateFunctionRefs } from './services/messageHandlers.ts'
 import { connectWS } from './services/webSocket.ts'
+import { userHasClaim } from './services/rbac.ts'
+
 import ChatList from './components/ChatList.tsx'
 import ChatWindow from './components/ChatWindow.tsx'
 import LoginDialog from './components/LoginDialog.tsx' 
@@ -11,7 +13,8 @@ import LoginDialog from './components/LoginDialog.tsx'
 import UsersDialog from './components/UsersDialog' 
 import NewChatDialog from './components/NewChatDialog.tsx' 
 import RegisterDialog from './components/RegisterDialog.tsx' 
-import type { User, Message, ChatUsers, Role } from './interfaces.ts';
+import type { User, Message, ChatUsers, Role  } from './interfaces.ts';
+import  { CLAIMS } from './interfaces.ts';
 import { sendGETRequest, sendPOSTRequest, setLoginDialogRef } from './services/restAPI.ts'
 import { StatusCodes } from 'http-status-codes'
 
@@ -102,6 +105,12 @@ function App() {
   
   const handleLoginClick = () => { refreshLogin(false) }
 
+  const isUserHavingClaim = (claim: string) => {
+    return userHasClaim(claim, 
+      currentUserId, usersRegistered, availableRoles );
+  }
+
+
   return (
     <main className="app-container">
       <header className="top-bar">
@@ -165,19 +174,24 @@ function App() {
       Logout
     </button>
 
-    <button 
-      id="btnNewChat" 
-      onClick={() => setShowNewChatDialog(true)}
-      disabled={(currentUserId == null)}      
-    >
-      New Chat
-    </button>
-     <button 
-      id="btnUserRoles" 
-      onClick={() => setShowUsersRoles(true)}
-    >
-      Users and Roles
-    </button>
+      {isUserHavingClaim(CLAIMS.CREATE_CHAT) && (
+      <button 
+        id="btnNewChat" 
+        onClick={() => setShowNewChatDialog(true)}
+        disabled={(currentUserId == null)}      
+      >
+        New Chat
+      </button>
+      )}
+      {isUserHavingClaim(CLAIMS.MANAGE_USERS) && (
+       <button 
+          id="btnUserRoles" 
+          onClick={() => setShowUsersRoles(true)}
+          disabled={(currentUserId == null)}
+        >
+          Users and Roles
+        </button>
+      )}
   </div>
 
 </header>

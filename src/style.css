@@ -385,9 +385,6 @@ button:hover {
   border-radius: 4px;
 }
 
-.user-item:hover {
-  background-color: #e0e0e0;
-}
 
 /* User checkboxes */
 .user-checkbox-list {

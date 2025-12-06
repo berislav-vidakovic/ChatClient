@@ -25,3 +25,9 @@ export interface Role {
   role: string;
   claims: string[];
 }
+
+export const CLAIMS = {
+  SEND_MSG: "sendMessage",
+  CREATE_CHAT: "createChat",
+  MANAGE_USERS: "manageUsers",
+};
