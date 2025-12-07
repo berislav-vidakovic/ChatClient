@@ -5,8 +5,8 @@
             "WS": "ws://localhost:8081/websocket"
         },
         "Production": {
-            "HTTP": "https://chatjn.barryonweb.com/",
-            "WS": "wss://chatjn.barryonweb.com//websocket"
+            "HTTP": "https://chatjn.barryonweb.com",
+            "WS": "wss://chatjn.barryonweb.com/websocket"
         }
     }
 }

@@ -209,21 +209,35 @@ Frontend protected endpoint Request workflow
 - Static frontend → needs physical path (root or alias)
 - Backend service → just IP/port (proxy_pass)
 
-#### 1. Minimal Nging config file
+#### 1. Minimal Nginx config file
 
-- Create subdomain chatclientjn.barryonweb.com
+- Create subdomain chatclientjn.barryonweb.com and minimal Nginx cfg file
+
+  ```bash
+  server {
+    listen 80;
+    server_name chatjnclient.barryonweb.com;
+
+    root /var/www/chatapp/frontend;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+  } 
+  ```
 - Copy minimal nginx cfg file
 
   ```bash
   scp chatjnclient.barryonweb.com barry75@barryonweb.com:/var/www/chatapp/nginx/
   sudo cp /var/www/chatapp/nginx/chatjnclient.barryonweb.com /etc/nginx/sites-available/
-
   ```
 
 - Enable Nginx site
 
   ```bash
-  sudo ln -s /etc/nginx/sites-available/chatjn.barryonweb.com /etc/nginx/sites-enabled/
+  sudo ln -s /etc/nginx/sites-available/chatjnclient.barryonweb.com /etc/nginx/sites-enabled/
+  sudo ln -sf /etc/nginx/sites-available/chatjnclient.barryonweb.com /etc/nginx/sites-enabled/
   ```
 
 - Check sites enabled
@@ -238,8 +252,13 @@ Frontend protected endpoint Request workflow
   sudo certbot --nginx -d chatjnclient.barryonweb.com
   ```
 
-  - SSL manager will <a href="docs/ssl-nginx-cfg.md">
-update Nginx config file </a>
+- Check SSL certificate installed
+
+  ```bash
+  sudo ls -l /etc/letsencrypt/live/chatjnclient.barryonweb.com
+  ```
+
+  - SSL manager will update Nginx config file </a>
 
 - Check Nginx syntax and reload
 
@@ -253,11 +272,19 @@ update Nginx config file </a>
 
   ```bash
   npm run build
-  scp target/chatappjn-0.0.1-SNAPSHOT.jar barry75@barryonweb.com:/var/www/chatapp/backend/chatjn/
-  java -jar chatappjn-0.0.1-SNAPSHOT.jar
+  scp -r dist/* barry75@barryonweb.com:/var/www/chatapp/frontend/
   ```
 
 - Test 
+
+  - Test websocket
+    ```bash
+    sudo wget -qO /usr/local/bin/websocat \
+      https://github.com/vi/websocat/releases/latest/download/websocat.x86_64-unknown-linux-musl
+    sudo chmod +x /usr/local/bin/websocat
+    websocat --version
+    websocat wss://chatjn.barryonweb.com/websocket
+    ```
 
   - Test locally
     ```bash
@@ -273,8 +300,4 @@ update Nginx config file </a>
 
 
 
-
-#### 2. Issue SSL certificate
-
-#### 3. Build CI/CD yaml file 
 
