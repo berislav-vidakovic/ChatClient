@@ -102,7 +102,7 @@ export function isResetMessageReceived( jsonResp: any ) : boolean {
 }
 
 export function handleUserRegister( jsonResp: any, status: number ){
-  console.log("*** HANDLE User registered: ", jsonResp);
+  console.log("*** HANDLE User registered: ", jsonResp,  "status", status);
   if( jsonResp.acknowledged ) {     
     console.log("User registered: ", jsonResp.user);
   }

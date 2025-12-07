@@ -195,3 +195,86 @@ Frontend protected endpoint Request workflow
     */}
   </div> )}
   ```
+
+### Check and kill hanging backend proces
+
+  ```powershell
+  netstat -ano | findstr :8081
+  tasklist /FI "PID eq 16952"
+  taskkill /PID 16952 /F
+  ```
+
+### 9. Frontend deployment
+
+- Static frontend → needs physical path (root or alias)
+- Backend service → just IP/port (proxy_pass)
+
+#### 1. Minimal Nging config file
+
+- Create subdomain chatclientjn.barryonweb.com
+- Copy minimal nginx cfg file
+
+  ```bash
+  scp chatjnclient.barryonweb.com barry75@barryonweb.com:/var/www/chatapp/nginx/
+  sudo cp /var/www/chatapp/nginx/chatjnclient.barryonweb.com /etc/nginx/sites-available/
+
+  ```
+
+- Enable Nginx site
+
+  ```bash
+  sudo ln -s /etc/nginx/sites-available/chatjn.barryonweb.com /etc/nginx/sites-enabled/
+  ```
+
+- Check sites enabled
+
+  ```bash
+  ls -l /etc/nginx/sites-enabled/
+    ```
+
+- Issue SSL certificate for the subdomain
+
+  ```bash
+  sudo certbot --nginx -d chatjnclient.barryonweb.com
+  ```
+
+  - SSL manager will <a href="docs/ssl-nginx-cfg.md">
+update Nginx config file </a>
+
+- Check Nginx syntax and reload
+
+  ```bash
+  sudo nginx -t
+  sudo systemctl reload nginx
+  ```
+
+
+- Build frontend, copy and run manually 
+
+  ```bash
+  npm run build
+  scp target/chatappjn-0.0.1-SNAPSHOT.jar barry75@barryonweb.com:/var/www/chatapp/backend/chatjn/
+  java -jar chatappjn-0.0.1-SNAPSHOT.jar
+  ```
+
+- Test 
+
+  - Test locally
+    ```bash
+    curl http://localhost:8081/api/ping
+    curl http://localhost:8081/api/pingdb
+    ```
+
+  - Test via Nginx + SSL
+    ```bash
+    curl -k https://chatjn.barryonweb.com/api/ping
+    curl -k https://chatjn.barryonweb.com/api/pingdb
+    ```
+
+
+
+
+#### 2. Issue SSL certificate
+
+#### 3. Build CI/CD yaml file 
+

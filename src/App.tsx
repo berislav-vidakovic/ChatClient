@@ -94,6 +94,7 @@ function App() {
           {
             case StatusCodes.OK:
               parseAndUpdateModel(jsonResp);
+              console.log("Claims: ", ...currentUserClaims)
               break;
             case StatusCodes.UNAUTHORIZED:
             case StatusCodes.BAD_REQUEST:

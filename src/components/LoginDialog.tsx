@@ -1,7 +1,7 @@
 // LoginDialog.tsx
 import type { Dispatch, SetStateAction } from "react";
-import type { User, Message } from '../interfaces.ts';
-import { useEffect, useRef } from "react";
+import type { User } from '../interfaces.ts';
+import { useRef } from "react";
 import { loginUser } from "../services/utils.ts";
 
 
