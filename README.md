@@ -206,10 +206,9 @@ Frontend protected endpoint Request workflow
 
 ### 9. Frontend deployment
 
-- Static frontend → needs physical path (root or alias)
-- Backend service → just IP/port (proxy_pass)
-
-#### 1. Minimal Nginx config file
+- Nginx config file comparison
+  - Static frontend - needs physical path (root or alias)
+  - Backend service - needs just IP/port (proxy_pass)
 
 - Create subdomain chatclientjn.barryonweb.com and minimal Nginx cfg file
 
@@ -233,7 +232,7 @@ Frontend protected endpoint Request workflow
   sudo cp /var/www/chatapp/nginx/chatjnclient.barryonweb.com /etc/nginx/sites-available/
   ```
 
-- Enable Nginx site
+- Enable Nginx site (normal way or forced)
 
   ```bash
   sudo ln -s /etc/nginx/sites-available/chatjnclient.barryonweb.com /etc/nginx/sites-enabled/
@@ -258,7 +257,7 @@ Frontend protected endpoint Request workflow
   sudo ls -l /etc/letsencrypt/live/chatjnclient.barryonweb.com
   ```
 
-  - SSL manager will update Nginx config file </a>
+  - SSL manager will update Nginx config file
 
 - Check Nginx syntax and reload
 
@@ -286,18 +285,58 @@ Frontend protected endpoint Request workflow
     websocat wss://chatjn.barryonweb.com/websocket
     ```
 
-  - Test locally
+  - Test backend locally
     ```bash
     curl http://localhost:8081/api/ping
     curl http://localhost:8081/api/pingdb
     ```
 
-  - Test via Nginx + SSL
+  - Test backend via Nginx + SSL
     ```bash
     curl -k https://chatjn.barryonweb.com/api/ping
     curl -k https://chatjn.barryonweb.com/api/pingdb
     ```
 
+  - Test frontend in browser
+    ```bash
+    https://chatjnclient.barryonweb.com/
+    ```
 
+- Create yaml file fo CI/CD pipeline
+
+  - Test connection Dev-VPS
+
+    ```bash
+    ssh -i ~/.ssh/github_ci barry75@barryonweb.com
+    ```
+  
+  - Establish connection Github-VPS (Repository-specific)
+    - Add the Private Key ~/.ssh/github_ci to GitHub Secrets
+      - GitHub: Settings → Secrets and variables → Actions → New repository secret
+      - Paste full content of private key github_ci
+      - Add yaml file to test SSH connection
+        ```yaml
+        name: Test SSH Connection
+
+        on:
+          workflow_dispatch:  # Allows trigger manually in GitHub
+
+        jobs:
+          test-ssh:
+            runs-on: ubuntu-latest
+
+            steps:
+              - name: Checkout repository
+                uses: actions/checkout@v4
+
+              - name: Start SSH agent and load key
+                uses: webfactory/ssh-agent@v0.9.0
+                with:
+                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+              - name: Test SSH connection
+                run: ssh -o StrictHostKeyChecking=no barry75@barryonweb.com "echo Connected successfully from GitHub!"
+        ```
+  - Create deploy.yaml file
 
 
