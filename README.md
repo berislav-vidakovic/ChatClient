@@ -13,7 +13,8 @@
     - [Token Validation Flow](#token-validation-flow)  
 6. [Invalid access token retry path for /register endpoint](#6-invalid-access-token-retry-path-for-register-endpoint)  
 7. [Login with password and logout – manual and automatic](#7-login-with-password-and-logout---manual-and-automatic)
-
+8. [Role-Based Access Control (RBAC)](#8-role-based-access-control-rbac)  
+9. [Frontend deployment](#9-frontend-deployment)
 
 ### 1. Send refresh token on Login button
 
@@ -313,7 +314,9 @@ Frontend protected endpoint Request workflow
   - Establish connection Github-VPS (Repository-specific)
     - Add the Private Key ~/.ssh/github_ci to GitHub Secrets
       - GitHub: Settings → Secrets and variables → Actions → New repository secret
-      - Paste full content of private key github_ci
+      - Create secret key: 
+        - Name: SSH_PRIVATE_KEY
+        - Content: Paste full content of private key github_ci
       - Add yaml file to test SSH connection
         ```yaml
         name: Test SSH Connection
